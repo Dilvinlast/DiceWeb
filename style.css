@@ -1,0 +1,16 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding-top: 100px;
+}
+
+#result {
+    font-size: 80px;
+    margin: 30px;
+}
+
+#rollButton {
+    font-size: 20px;
+    padding: 15px 30px;
+    cursor: pointer;
+}
