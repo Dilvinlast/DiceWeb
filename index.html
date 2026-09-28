@@ -1,24 +1,41 @@
 <!DOCTYPE html>
+<html lang="lv">
 
-<html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Dice</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
     <h1>Metamais kauliņš</h1>
 
+<select id="diceSelector">
+
+    <option value="d6">D6</option>
+    <option value="d4">D4</option>
+    <option value="d8">D8</option>
+    <option value="d10">D10</option>
+    <option value="d12">D12</option>
+    <option value="d20">D20</option>
+
+</select>
+
+  <div class="scene" id="diceContainer"></div>
+
     <p>Kauliņa rezultāts:</p>
 
     <h2 id="result">1</h2>
 
-<button id="rollButton">Mest kauliņu</button>
+    <button id="rollButton">Mest kauliņu</button>
 
-<script src="script.js"></script>
-
+    <script src="dice.js"></script>
+    <script src="script.js"></script>
 
 </body>
+
 </html>
