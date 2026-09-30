@@ -5,36 +5,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Dice</title>
+    <title>Millionaire Mind Dice</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <h1>Metamais kauliņš</h1>
+    <main>
 
-<select id="diceSelector">
+        <h1>Metamais kauliņš</h1>
 
-    <option value="d6">D6</option>
-    <option value="d4">D4</option>
-    <option value="d8">D8</option>
-    <option value="d10">D10</option>
-    <option value="d12">D12</option>
-    <option value="d20">D20</option>
+        <div class="selector-container">
 
-</select>
+            <label for="diceSelector">
+                Kauliņa veids
+            </label>
 
-  <div class="scene" id="diceContainer"></div>
+            <select id="diceSelector">
+                <option value="d6">D6</option>
+                <option value="d4">D4</option>
+                <option value="d8">D8</option>
+                <option value="d10">D10</option>
+                <option value="d12">D12</option>
+                <option value="d20">D20</option>
+            </select>
 
-    <p>Kauliņa rezultāts:</p>
+        </div>
 
-    <h2 id="result">1</h2>
 
-    <button id="rollButton">Mest kauliņu</button>
+        <div id="diceContainer"></div>
 
-    <script src="dice.js"></script>
-    <script src="script.js"></script>
+
+        <p class="result-label">
+            Kauliņa rezultāts
+        </p>
+
+        <div id="result">-</div>
+
+
+        <button id="rollButton">
+            Mest kauliņu
+        </button>
+
+    </main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+
+<script src="dice.js"></script>
+<script src="script.js"></script>
 
 </body>
 

@@ -2,283 +2,276 @@
     box-sizing: border-box;
 }
 
+
 body {
+
     margin: 0;
 
-    font-family: Arial, sans-serif;
-    text-align: center;
+    min-height: 100vh;
 
-    background: #f4f4f4;
+    font-family:
+        Arial,
+        sans-serif;
 
-    color: #171717;
+    background:
+        #F6F3EB;
 
-    padding: 40px 20px;
+    color:
+        #2E4E7B;
 }
 
 
-/* Заголовок */
+
+main {
+
+    width: 100%;
+
+    max-width: 500px;
+
+    margin: 0 auto;
+
+    padding:
+        35px
+        20px
+        60px;
+
+    text-align: center;
+}
+
+
 
 h1 {
-    margin-bottom: 20px;
+
+    margin:
+        0
+        0
+        30px;
+
+    font-size: 32px;
+
+    color:
+        #2E4E7B;
 }
 
 
-/* 3D пространство */
 
-.scene {
-    width: 180px;
-    height: 180px;
+/* -------------------------
+   DICE SELECTOR
+------------------------- */
 
-    margin: 70px auto;
+.selector-container {
 
-    perspective: 700px;
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 15px;
 }
 
 
-/* Сам куб */
+.selector-container label {
 
-.dice {
-    width: 180px;
-    height: 180px;
+    font-size: 15px;
 
-    position: relative;
-
-    transform-style: preserve-3d;
-
-    transform:
-        rotateX(-25deg)
-        rotateY(35deg);
+    font-weight: bold;
 }
 
 
-/* Общий дизайн всех граней */
+#diceSelector {
 
-.face {
-    position: absolute;
+    padding:
+        10px
+        14px;
 
-    width: 180px;
-    height: 180px;
+    border:
+        2px solid
+        #2E4E7B;
 
-    padding: 28px;
-
-    display: grid;
-
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    border-radius:
+        10px;
 
     background:
-        linear-gradient(
-            145deg,
-            #fffdf7,
-            #e8e4da
-        );
+        #F6F3EB;
 
-    border: 1px solid #d2cec4;
+    color:
+        #2E4E7B;
 
-    border-radius: 28px;
+    font-size:
+        16px;
 
-    backface-visibility: hidden;
+    font-weight:
+        bold;
 
-    box-shadow:
-        inset 5px 5px 12px rgba(255, 255, 255, 0.9),
-        inset -7px -7px 14px rgba(0, 0, 0, 0.08);
+    cursor:
+        pointer;
 }
 
 
-/* Положение шести сторон */
 
-.face-1 {
-    transform: translateZ(90px);
-}
+/* -------------------------
+   3D AREA
+------------------------- */
 
-.face-2 {
-    transform:
-        rotateY(90deg)
-        translateZ(90px);
-}
+#diceContainer {
 
-.face-3 {
-    transform:
-        rotateY(180deg)
-        translateZ(90px);
-}
+    width: 100%;
 
-.face-4 {
-    transform:
-        rotateY(-90deg)
-        translateZ(90px);
-}
+    height: 330px;
 
-.face-5 {
-    transform:
-        rotateX(90deg)
-        translateZ(90px);
-}
+    margin:
+        10px
+        auto;
 
-.face-6 {
-    transform:
-        rotateX(-90deg)
-        translateZ(90px);
+    touch-action:
+        manipulation;
 }
 
 
-/* Точки */
+#diceContainer canvas {
 
-.dot {
-    width: 30px;
-    height: 30px;
+    display: block;
 
-    border-radius: 50%;
+    width: 100%;
 
-    place-self: center;
-
-    background:
-        radial-gradient(
-            circle at 35% 30%,
-            #404040,
-            #171717 55%,
-            #050505
-        );
-
-    box-shadow:
-        inset 3px 3px 5px rgba(255, 255, 255, 0.15),
-        inset -4px -4px 7px rgba(0, 0, 0, 0.8),
-        1px 2px 3px rgba(0, 0, 0, 0.25);
+    height: 100%;
 }
 
 
-/* 9 возможных позиций точек */
 
-.p1 {
-    grid-column: 1;
-    grid-row: 1;
+/* -------------------------
+   RESULT
+------------------------- */
+
+.result-label {
+
+    margin:
+        5px
+        0;
+
+    font-size:
+        14px;
+
+    color:
+        #8B7E74;
 }
 
-.p2 {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-.p3 {
-    grid-column: 3;
-    grid-row: 1;
-}
-
-.p4 {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-.p5 {
-    grid-column: 2;
-    grid-row: 2;
-}
-
-.p6 {
-    grid-column: 3;
-    grid-row: 2;
-}
-
-.p7 {
-    grid-column: 1;
-    grid-row: 3;
-}
-
-.p8 {
-    grid-column: 2;
-    grid-row: 3;
-}
-
-.p9 {
-    grid-column: 3;
-    grid-row: 3;
-}
-
-
-/* Результат */
 
 #result {
-    font-size: 40px;
 
-    margin: 10px 0 25px;
+    min-height:
+        60px;
+
+    margin-bottom:
+        20px;
+
+    font-size:
+        52px;
+
+    font-weight:
+        bold;
+
+    color:
+        #2E4E7B;
 }
 
 
-/* Кнопка */
+
+/* -------------------------
+   BUTTON
+------------------------- */
 
 #rollButton {
-    border: none;
 
-    border-radius: 14px;
+    width:
+        100%;
 
-    padding: 16px 32px;
+    max-width:
+        300px;
 
-    font-size: 18px;
-    font-weight: bold;
+    min-height:
+        55px;
 
-    background: #171717;
-    color: white;
+    padding:
+        15px
+        25px;
 
-    cursor: pointer;
+    border:
+        none;
+
+    border-radius:
+        14px;
+
+    background:
+        #F3A40B;
+
+    color:
+        #2E4E7B;
+
+    font-size:
+        18px;
+
+    font-weight:
+        bold;
+
+    cursor:
+        pointer;
 
     transition:
-        transform 0.15s ease,
-        background 0.15s ease;
+        transform
+        0.15s ease;
 }
 
 
 #rollButton:active {
-    transform: scale(0.96);
 
-    background: #333333;
+    transform:
+        scale(0.96);
 }
 
 
-/* Телефон */
 
-@media (max-width: 500px) {
+/* -------------------------
+   MOBILE
+------------------------- */
 
-    body {
-        padding-top: 25px;
+@media (
+    max-width: 500px
+) {
+
+    main {
+
+        padding-top:
+            25px;
     }
+
 
     h1 {
-        font-size: 26px;
+
+        font-size:
+            27px;
+
+        margin-bottom:
+            20px;
     }
 
-    .scene {
-        margin-top: 60px;
-        margin-bottom: 60px;
+
+    #diceContainer {
+
+        height:
+            280px;
     }
 
-    #rollButton {
-        width: 100%;
 
-        max-width: 300px;
+    .selector-container {
+
+        flex-direction:
+            column;
+
+        gap:
+            7px;
     }
-}
-
-#diceSelector {
-    padding: 10px 20px;
-
-    font-size: 18px;
-
-    border-radius: 10px;
-
-    margin-top: 20px;
-}
-
-
-.dice-placeholder {
-    width: 180px;
-    height: 180px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    font-size: 50px;
-    font-weight: bold;
-
-    color: #2E4E7B;
 }
