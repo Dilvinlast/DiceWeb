@@ -1,224 +1,669 @@
-const container = document.getElementById("diceContainer");
-const diceSelector = document.getElementById("diceSelector");
-const rollButton = document.getElementById("rollButton");
-const resultText = document.getElementById("result");
+const container =
+    document.getElementById("diceContainer");
+
+const diceSelector =
+    document.getElementById("diceSelector");
+
+const rollButton =
+    document.getElementById("rollButton");
+
+const resultText =
+    document.getElementById("result");
 
 
-/* ========================================
+/* =====================================================
    SCENE
-======================================== */
+===================================================== */
 
-const scene = new THREE.Scene();
+const scene =
+    new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(
-    40,
-    container.clientWidth / container.clientHeight,
-    0.1,
-    100
+
+/* =====================================================
+   CAMERA
+===================================================== */
+
+const camera =
+    new THREE.PerspectiveCamera(
+        38,
+        container.clientWidth / container.clientHeight,
+        0.1,
+        100
+    );
+
+
+camera.position.set(
+    0,
+    2.5,
+    6
 );
 
-camera.position.set(0, 0, 6);
+
+camera.lookAt(
+    0,
+    0,
+    0
+);
 
 
-/* ========================================
+/* =====================================================
    RENDERER
-======================================== */
+===================================================== */
 
-const renderer = new THREE.WebGLRenderer({
-    antialias: true,
-    alpha: true
-});
+const renderer =
+    new THREE.WebGLRenderer({
+
+        antialias: true,
+
+        alpha: true
+    });
+
 
 renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, 2)
+
+    Math.min(
+        window.devicePixelRatio,
+        2
+    )
 );
 
+
 renderer.setSize(
+
     container.clientWidth,
+
     container.clientHeight
 );
 
-renderer.setClearColor(0x000000, 0);
 
-container.appendChild(renderer.domElement);
+renderer.setClearColor(
+    0x000000,
+    0
+);
 
 
-/* ========================================
+renderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+
+renderer.toneMapping =
+    THREE.ACESFilmicToneMapping;
+
+
+renderer.toneMappingExposure =
+    1.1;
+
+
+container.appendChild(
+    renderer.domElement
+);
+
+
+/* =====================================================
    LIGHTS
-======================================== */
+===================================================== */
 
-const ambientLight = new THREE.AmbientLight(
-    0xffffff,
-    1.5
+const ambientLight =
+    new THREE.AmbientLight(
+        0xffffff,
+        0.48
+    );
+
+
+scene.add(
+    ambientLight
 );
 
-scene.add(ambientLight);
+
+const mainLight =
+    new THREE.DirectionalLight(
+        0xfff7eb,
+        3.2
+    );
 
 
-const mainLight = new THREE.DirectionalLight(
-    0xffffff,
-    2.5
+mainLight.position.set(
+    -4,
+    6,
+    5
 );
 
-mainLight.position.set(4, 6, 5);
 
-scene.add(mainLight);
-
-
-const sideLight = new THREE.DirectionalLight(
-    0x9CCAEE,
-    0.7
+scene.add(
+    mainLight
 );
 
-sideLight.position.set(-4, 2, 3);
 
-scene.add(sideLight);
-
-
-/* ========================================
-   MATERIAL
-======================================== */
-
-const diceMaterial = new THREE.MeshStandardMaterial({
-    color: 0xF6F3EB,
-    roughness: 0.7,
-    metalness: 0,
-    flatShading: true,
-    polygonOffset: true,
-    polygonOffsetFactor: 1,
-    polygonOffsetUnits: 1
-});
+const fillLight =
+    new THREE.DirectionalLight(
+        0xdde8ff,
+        0.55
+    );
 
 
-/* ========================================
+fillLight.position.set(
+    5,
+    1,
+    3
+);
+
+
+scene.add(
+    fillLight
+);
+
+
+const backLight =
+    new THREE.DirectionalLight(
+        0xffffff,
+        0.25
+    );
+
+
+backLight.position.set(
+    0,
+    2,
+    -5
+);
+
+
+scene.add(
+    backLight
+);
+
+
+/* =====================================================
+   MATERIALS
+===================================================== */
+
+const diceMaterial =
+    new THREE.MeshStandardMaterial({
+
+        color:
+            0xf2efe8,
+
+        roughness:
+            0.72,
+
+        metalness:
+            0,
+
+        flatShading:
+            true
+    });
+
+
+const dotMaterial =
+    new THREE.MeshStandardMaterial({
+
+        color:
+            0x151515,
+
+        roughness:
+            0.45,
+
+        metalness:
+            0
+    });
+
+
+/* =====================================================
    VARIABLES
-======================================== */
+===================================================== */
 
-let currentDiceType = "d6";
-
-let diceGroup = null;
-
-let rolling = false;
-
-let targetRotationX = 0;
-let targetRotationY = 0;
-let targetRotationZ = 0;
+let currentDiceType =
+    diceSelector.value || "d6";
 
 
-/* ========================================
-   NUMBER TEXTURE
-======================================== */
+let diceGroup =
+    null;
 
-function createNumberTexture(number) {
 
-    const canvas = document.createElement("canvas");
+let currentFaces =
+    [];
 
-    canvas.width = 512;
-    canvas.height = 512;
 
-    const ctx = canvas.getContext("2d");
+let rolling =
+    false;
 
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
+
+let pendingResult =
+    null;
+
+
+let rollStartTime =
+    0;
+
+
+const rollDuration =
+    1600;
+
+
+const startQuaternion =
+    new THREE.Quaternion();
+
+
+let targetQuaternion =
+    new THREE.Quaternion();
+
+
+/* =====================================================
+   STARTING ANGLES
+===================================================== */
+
+const startRotations = {
+
+    d4: {
+        x: -0.85,
+        y: 0.70,
+        z: 0.48
+    },
+
+    d6: {
+        x: -0.42,
+        y: 0.62,
+        z: 0.10
+    },
+
+    /*
+        D8 оставляем максимально
+        близко к твоему хорошему виду.
+    */
+
+    d8: {
+        x: -0.35,
+        y: 0.65,
+        z: 0.12
+    },
+
+    d10: {
+        x: -0.45,
+        y: 0.62,
+        z: 0.18
+    },
+
+    d12: {
+        x: -0.38,
+        y: 0.62,
+        z: 0.12
+    },
+
+    d20: {
+        x: -0.38,
+        y: 0.62,
+        z: 0.12
+    }
+};
+
+
+/* =====================================================
+   D6 NORMALS
+===================================================== */
+
+const d6FaceNormals = {
+
+    1:
+        new THREE.Vector3(
+            0,
+            0,
+            1
+        ),
+
+    2:
+        new THREE.Vector3(
+            0,
+            -1,
+            0
+        ),
+
+    3:
+        new THREE.Vector3(
+            1,
+            0,
+            0
+        ),
+
+    4:
+        new THREE.Vector3(
+            -1,
+            0,
+            0
+        ),
+
+    5:
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        ),
+
+    6:
+        new THREE.Vector3(
+            0,
+            0,
+            -1
+        )
+};
+
+
+/* =====================================================
+   D6 DOTS
+===================================================== */
+
+const pipPatterns = {
+
+    1: [
+        [0, 0]
+    ],
+
+    2: [
+        [-0.34, 0.34],
+        [0.34, -0.34]
+    ],
+
+    3: [
+        [-0.34, 0.34],
+        [0, 0],
+        [0.34, -0.34]
+    ],
+
+    4: [
+        [-0.34, 0.34],
+        [0.34, 0.34],
+
+        [-0.34, -0.34],
+        [0.34, -0.34]
+    ],
+
+    5: [
+        [-0.34, 0.34],
+        [0.34, 0.34],
+
+        [0, 0],
+
+        [-0.34, -0.34],
+        [0.34, -0.34]
+    ],
+
+    6: [
+        [-0.34, 0.38],
+        [-0.34, 0],
+        [-0.34, -0.38],
+
+        [0.34, 0.38],
+        [0.34, 0],
+        [0.34, -0.38]
+    ]
+};
+
+
+/* =====================================================
+   CREATE DOT
+===================================================== */
+
+function createPip() {
+
+    const geometry =
+        new THREE.SphereGeometry(
+            0.105,
+            24,
+            16
+        );
+
+
+    const pip =
+        new THREE.Mesh(
+            geometry,
+            dotMaterial
+        );
+
+
+    pip.scale.set(
+        1,
+        1,
+        0.25
     );
 
 
-    ctx.fillStyle = "#2E4E7B";
-
-    ctx.font = "bold 220px Arial";
-
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-
-    ctx.fillText(
-        number.toString(),
-        256,
-        275
-    );
-
-
-    const texture =
-        new THREE.CanvasTexture(canvas);
-
-    texture.needsUpdate = true;
-
-    return texture;
+    return pip;
 }
 
 
-/* ========================================
-   GET TRIANGLES
-======================================== */
+/* =====================================================
+   ADD D6 FACE
+===================================================== */
 
-function getTriangles(geometry) {
+function addPipFace(
+    group,
+    number,
+    normal,
+    up
+) {
+
+    const pattern =
+        pipPatterns[number];
+
+
+    const n =
+        normal
+            .clone()
+            .normalize();
+
+
+    const u =
+        up
+            .clone()
+            .normalize();
+
+
+    const right =
+        new THREE.Vector3()
+            .crossVectors(
+                u,
+                n
+            )
+            .normalize();
+
+
+    const surface =
+        0.885;
+
+
+    pattern.forEach(
+        ([x, y]) => {
+
+            const pip =
+                createPip();
+
+
+            const position =
+                n
+                    .clone()
+                    .multiplyScalar(
+                        surface
+                    );
+
+
+            position.add(
+
+                right
+                    .clone()
+                    .multiplyScalar(x)
+            );
+
+
+            position.add(
+
+                u
+                    .clone()
+                    .multiplyScalar(y)
+            );
+
+
+            pip.position.copy(
+                position
+            );
+
+
+            pip.quaternion.setFromUnitVectors(
+
+                new THREE.Vector3(
+                    0,
+                    0,
+                    1
+                ),
+
+                n
+            );
+
+
+            group.add(
+                pip
+            );
+        }
+    );
+}
+
+
+/* =====================================================
+   ADD ALL D6 DOTS
+===================================================== */
+
+function addD6Pips(
+    group
+) {
+
+    addPipFace(
+        group,
+        1,
+        d6FaceNormals[1],
+        new THREE.Vector3(0, 1, 0)
+    );
+
+
+    addPipFace(
+        group,
+        6,
+        d6FaceNormals[6],
+        new THREE.Vector3(0, 1, 0)
+    );
+
+
+    addPipFace(
+        group,
+        3,
+        d6FaceNormals[3],
+        new THREE.Vector3(0, 1, 0)
+    );
+
+
+    addPipFace(
+        group,
+        4,
+        d6FaceNormals[4],
+        new THREE.Vector3(0, 1, 0)
+    );
+
+
+    addPipFace(
+        group,
+        5,
+        d6FaceNormals[5],
+        new THREE.Vector3(0, 0, -1)
+    );
+
+
+    addPipFace(
+        group,
+        2,
+        d6FaceNormals[2],
+        new THREE.Vector3(0, 0, 1)
+    );
+}
+
+
+/* =====================================================
+   READ TRIANGLES
+===================================================== */
+
+function getTriangles(
+    geometry
+) {
 
     const position =
         geometry.attributes.position;
 
+
     const index =
         geometry.index;
 
-    const triangles = [];
+
+    const triangles =
+        [];
 
 
-    function addTriangle(a, b, c) {
+    function addTriangle(
+        ia,
+        ib,
+        ic
+    ) {
 
-        const A =
+        const a =
             new THREE.Vector3()
                 .fromBufferAttribute(
                     position,
-                    a
+                    ia
                 );
 
-        const B =
+
+        const b =
             new THREE.Vector3()
                 .fromBufferAttribute(
                     position,
-                    b
+                    ib
                 );
 
-        const C =
+
+        const c =
             new THREE.Vector3()
                 .fromBufferAttribute(
                     position,
-                    c
+                    ic
                 );
 
 
         const center =
             new THREE.Vector3()
-                .add(A)
-                .add(B)
-                .add(C)
+                .add(a)
+                .add(b)
+                .add(c)
                 .divideScalar(3);
 
 
-        const edge1 =
+        const ab =
             new THREE.Vector3()
-                .subVectors(B, A);
+                .subVectors(
+                    b,
+                    a
+                );
 
-        const edge2 =
+
+        const ac =
             new THREE.Vector3()
-                .subVectors(C, A);
+                .subVectors(
+                    c,
+                    a
+                );
 
 
         const normal =
             new THREE.Vector3()
                 .crossVectors(
-                    edge1,
-                    edge2
+                    ab,
+                    ac
                 )
                 .normalize();
 
-
-        /*
-            Проверяем, смотрит ли
-            нормаль наружу.
-        */
 
         if (
             normal.dot(center) < 0
@@ -229,8 +674,12 @@ function getTriangles(geometry) {
 
 
         triangles.push({
-            center: center,
-            normal: normal
+
+            center:
+                center,
+
+            normal:
+                normal
         });
     }
 
@@ -244,8 +693,11 @@ function getTriangles(geometry) {
         ) {
 
             addTriangle(
+
                 index.getX(i),
+
                 index.getX(i + 1),
+
                 index.getX(i + 2)
             );
         }
@@ -271,165 +723,312 @@ function getTriangles(geometry) {
 }
 
 
-/* ========================================
-   GROUP TRIANGLES INTO REAL FACES
-======================================== */
+/* =====================================================
+   FIND REAL FACES
+===================================================== */
 
 function getRealFaces(
-    geometry,
-    expectedFaces
+    geometry
 ) {
 
     const triangles =
-        getTriangles(geometry);
+        getTriangles(
+            geometry
+        );
 
 
-    const groups = [];
+    const faces =
+        [];
 
 
-    triangles.forEach(triangle => {
+    triangles.forEach(
+        triangle => {
 
-        let groupFound = null;
-
-
-        for (
-            const group of groups
-        ) {
-
-            const normalSimilarity =
-                triangle.normal.dot(
-                    group.normal
-                );
+            let matchingFace =
+                null;
 
 
-            const planeDistance =
-                Math.abs(
+            for (
+                const face of faces
+            ) {
+
+                const similarity =
+                    face.normal.dot(
+                        triangle.normal
+                    );
+
+
+                const planeA =
+                    face.center.dot(
+                        face.normal
+                    );
+
+
+                const planeB =
                     triangle.center.dot(
-                        group.normal
-                    )
-                    -
-                    group.center.dot(
-                        group.normal
-                    )
-                );
+                        face.normal
+                    );
+
+
+                const difference =
+                    Math.abs(
+                        planeA -
+                        planeB
+                    );
+
+
+                if (
+                    similarity > 0.999 &&
+                    difference < 0.025
+                ) {
+
+                    matchingFace =
+                        face;
+
+                    break;
+                }
+            }
 
 
             if (
-                normalSimilarity > 0.995 &&
-                planeDistance < 0.05
+                matchingFace
             ) {
 
-                groupFound = group;
+                matchingFace.centers.push(
+                    triangle.center.clone()
+                );
 
-                break;
+
+                matchingFace.center.set(
+                    0,
+                    0,
+                    0
+                );
+
+
+                matchingFace.centers.forEach(
+                    point => {
+
+                        matchingFace.center.add(
+                            point
+                        );
+                    }
+                );
+
+
+                matchingFace.center.divideScalar(
+                    matchingFace.centers.length
+                );
+
+            } else {
+
+                faces.push({
+
+                    normal:
+                        triangle.normal.clone(),
+
+                    center:
+                        triangle.center.clone(),
+
+                    centers: [
+                        triangle.center.clone()
+                    ]
+                });
             }
         }
+    );
 
 
-        if (groupFound) {
+    return faces;
+}
 
-            groupFound.triangles.push(
-                triangle
+
+/* =====================================================
+   SORT FACES
+===================================================== */
+
+function sortFaces(
+    faces
+) {
+
+    return faces.sort(
+        (a, b) => {
+
+            if (
+                Math.abs(
+                    a.center.y -
+                    b.center.y
+                ) > 0.001
+            ) {
+
+                return (
+                    b.center.y -
+                    a.center.y
+                );
+            }
+
+
+            const angleA =
+                Math.atan2(
+                    a.center.z,
+                    a.center.x
+                );
+
+
+            const angleB =
+                Math.atan2(
+                    b.center.z,
+                    b.center.x
+                );
+
+
+            return (
+                angleA -
+                angleB
             );
-
-
-            groupFound.center
-                .set(0, 0, 0);
-
-
-            groupFound.triangles
-                .forEach(t => {
-
-                    groupFound.center.add(
-                        t.center
-                    );
-                });
-
-
-            groupFound.center.divideScalar(
-                groupFound.triangles.length
-            );
-
-        } else {
-
-            groups.push({
-
-                normal:
-                    triangle.normal.clone(),
-
-                center:
-                    triangle.center.clone(),
-
-                triangles: [
-                    triangle
-                ]
-            });
         }
-    });
-
-
-    return groups.slice(
-        0,
-        expectedFaces
     );
 }
 
 
-/* ========================================
-   CREATE NUMBER LABEL
-======================================== */
+/* =====================================================
+   NUMBER TEXTURE
+===================================================== */
+
+function createNumberTexture(
+    number
+) {
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+
+    canvas.width =
+        512;
+
+
+    canvas.height =
+        512;
+
+
+    const context =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    context.clearRect(
+        0,
+        0,
+        512,
+        512
+    );
+
+
+    context.fillStyle =
+        "#2E4E7B";
+
+
+    context.font =
+        "bold 210px Arial";
+
+
+    context.textAlign =
+        "center";
+
+
+    context.textBaseline =
+        "middle";
+
+
+    context.fillText(
+        number.toString(),
+        256,
+        256
+    );
+
+
+    const texture =
+        new THREE.CanvasTexture(
+            canvas
+        );
+
+
+    texture.colorSpace =
+        THREE.SRGBColorSpace;
+
+
+    texture.needsUpdate =
+        true;
+
+
+    return texture;
+}
+
+
+/* =====================================================
+   NUMBER ON FACE
+===================================================== */
 
 function createNumberLabel(
     number,
     face,
-    diceType
+    type
 ) {
 
     const texture =
-        createNumberTexture(number);
+        createNumberTexture(
+            number
+        );
 
 
     const material =
         new THREE.MeshBasicMaterial({
 
-            map: texture,
+            map:
+                texture,
 
-            transparent: true,
+            transparent:
+                true,
 
-            depthTest: true,
+            side:
+                THREE.DoubleSide,
 
-            depthWrite: false,
-
-            side: THREE.DoubleSide
+            depthWrite:
+                false
         });
 
 
-    let size = 0.55;
+    let size =
+        0.46;
 
 
-    if (diceType === "d20") {
-        size = 0.42;
-    }
+    let offset =
+        0.025;
 
 
-    if (diceType === "d12") {
-        size = 0.48;
-    }
+    if (type === "d4") {
+    size = 1.50;
+}
 
+if (type === "d8") {
+    size = 1.14;
+}
 
-    if (diceType === "d10") {
-        size = 0.46;
-    }
+if (type === "d10") {
+    size = 1.14;
+    offset = 0.045;
+}
 
+if (type === "d12") {
+    size = 1.14;
+}
 
-    if (diceType === "d8") {
-        size = 0.50;
-    }
-
-
-    if (diceType === "d4") {
-        size = 0.52;
-    }
+if (type === "d20") {
+    size = 1.14;
+}
 
 
     const geometry =
@@ -447,7 +1046,8 @@ function createNumberLabel(
 
 
     /*
-        Центр грани.
+        Ставим число в центр
+        настоящей грани.
     */
 
     label.position.copy(
@@ -456,34 +1056,36 @@ function createNumberLabel(
 
 
     /*
-        Немного поднимаем над
-        поверхностью, чтобы избежать
-        мерцания.
+        Чуть-чуть поднимаем
+        над поверхностью.
     */
 
     label.position.add(
+
         face.normal
             .clone()
-            .multiplyScalar(0.025)
+            .multiplyScalar(
+                offset
+            )
     );
 
 
     /*
-        Поворачиваем плоскость
-        параллельно поверхности.
+        Разворачиваем плоскость
+        точно по normal грани.
     */
 
-    const defaultNormal =
+    label.quaternion.setFromUnitVectors(
+
         new THREE.Vector3(
             0,
             0,
             1
-        );
+        ),
 
-
-    label.quaternion.setFromUnitVectors(
-        defaultNormal,
         face.normal
+            .clone()
+            .normalize()
     );
 
 
@@ -491,54 +1093,17 @@ function createNumberLabel(
 }
 
 
-/* ========================================
-   EDGES
-======================================== */
+/* =====================================================
+   CREATE DICE
+===================================================== */
 
-function addEdges(
-    geometry,
-    group
+function createDice(
+    type
 ) {
 
-    const edgeGeometry =
-        new THREE.EdgesGeometry(
-            geometry,
-            10
-        );
-
-
-    const edgeMaterial =
-        new THREE.LineBasicMaterial({
-
-            color:
-                0x2E4E7B,
-
-            transparent:
-                true,
-
-            opacity:
-                0.35
-        });
-
-
-    const edges =
-        new THREE.LineSegments(
-            edgeGeometry,
-            edgeMaterial
-        );
-
-
-    group.add(edges);
-}
-
-
-/* ========================================
-   CREATE DICE
-======================================== */
-
-function createDice(type) {
-
-    if (diceGroup !== null) {
+    if (
+        diceGroup
+    ) {
 
         scene.remove(
             diceGroup
@@ -546,12 +1111,16 @@ function createDice(type) {
     }
 
 
-    const dice =
-        diceTypes[type];
-
-
     diceGroup =
         new THREE.Group();
+
+
+    currentFaces =
+        [];
+
+
+    const dice =
+        diceTypes[type];
 
 
     const geometry =
@@ -565,61 +1134,161 @@ function createDice(type) {
         );
 
 
-    diceGroup.add(mesh);
-
-
-    addEdges(
-        geometry,
-        diceGroup
+    diceGroup.add(
+        mesh
     );
 
 
-    /*
-        Находим настоящие грани.
-    */
+    /* =================================================
+       D6
+    ================================================= */
 
-    const faces =
-        getRealFaces(
-            geometry,
-            dice.sides
+    if (
+        type === "d6"
+    ) {
+
+        addD6Pips(
+            diceGroup
         );
 
 
-    /*
-        Добавляем номер
-        на каждую грань.
-    */
+        for (
+            let number = 1;
+            number <= 6;
+            number++
+        ) {
 
-    faces.forEach(
-        (face, index) => {
+            currentFaces.push({
 
-            const number =
-                index + 1;
-
-
-            const label =
-                createNumberLabel(
+                number:
                     number,
-                    face,
-                    type
+
+                normal:
+                    d6FaceNormals[
+                        number
+                    ].clone()
+            });
+        }
+
+    }
+
+
+    /* =================================================
+       OTHER DICE
+    ================================================= */
+
+    else {
+
+        let faces;
+
+
+        /*
+            D10 уже знает точные
+            центры своих 10 граней.
+        */
+
+        if (
+            type === "d10" &&
+            geometry.userData.diceFaces
+        ) {
+
+            faces =
+                geometry.userData
+                    .diceFaces
+                    .map(
+                        face => ({
+
+                            center:
+                                face.center.clone(),
+
+                            normal:
+                                face.normal.clone()
+                        })
+                    );
+
+        } else {
+
+            /*
+                D4 / D8 / D12 / D20
+            */
+
+            faces =
+                getRealFaces(
+                    geometry
                 );
 
 
-            diceGroup.add(
-                label
-            );
+            faces =
+                sortFaces(
+                    faces
+                );
         }
-    );
 
 
-    /*
-        Начальный красивый угол.
-    */
+        faces =
+            faces.slice(
+                0,
+                dice.sides
+            );
+
+
+        faces.forEach(
+            (
+                face,
+                index
+            ) => {
+
+                const number =
+                    index + 1;
+
+
+                currentFaces.push({
+
+                    number:
+                        number,
+
+                    normal:
+                        face.normal.clone(),
+
+                    center:
+                        face.center.clone()
+                });
+
+
+                const label =
+                    createNumberLabel(
+
+                        number,
+
+                        face,
+
+                        type
+                    );
+
+
+                diceGroup.add(
+                    label
+                );
+            }
+        );
+    }
+
+
+    /* =================================================
+       START ROTATION
+    ================================================= */
+
+    const rotation =
+        startRotations[type];
+
 
     diceGroup.rotation.set(
-        0.45,
-        0.65,
-        0.1
+
+        rotation.x,
+
+        rotation.y,
+
+        rotation.z
     );
 
 
@@ -629,13 +1298,96 @@ function createDice(type) {
 }
 
 
-/* ========================================
+/* =====================================================
+   FIND FACE BY NUMBER
+===================================================== */
+
+function getFaceByNumber(
+    number
+) {
+
+    return currentFaces.find(
+        face =>
+            face.number === number
+    );
+}
+
+
+/* =====================================================
+   LANDING ROTATION
+===================================================== */
+
+function getLandingQuaternion(
+    result
+) {
+
+    const face =
+        getFaceByNumber(
+            result
+        );
+
+
+    if (
+        !face
+    ) {
+
+        return new THREE.Quaternion();
+    }
+
+
+    const faceNormal =
+        face.normal
+            .clone()
+            .normalize();
+
+
+    /*
+        Направление от центра
+        к камере.
+    */
+
+    const cameraDirection =
+        camera.position
+            .clone()
+            .normalize();
+
+
+    /*
+        Поворачиваем нужную normal
+        прямо к камере.
+    */
+
+    const quaternion =
+        new THREE.Quaternion();
+
+
+    quaternion.setFromUnitVectors(
+
+        faceNormal,
+
+        cameraDirection
+    );
+
+
+    return quaternion;
+}
+
+
+/* =====================================================
    CHANGE DICE
-======================================== */
+===================================================== */
 
 diceSelector.addEventListener(
     "change",
     function () {
+
+        if (
+            rolling
+        ) {
+
+            return;
+        }
+
 
         currentDiceType =
             diceSelector.value;
@@ -652,9 +1404,9 @@ diceSelector.addEventListener(
 );
 
 
-/* ========================================
+/* =====================================================
    ROLL
-======================================== */
+===================================================== */
 
 rollButton.addEventListener(
     "click",
@@ -662,7 +1414,7 @@ rollButton.addEventListener(
 
         if (
             rolling ||
-            diceGroup === null
+            !diceGroup
         ) {
 
             return;
@@ -678,57 +1430,75 @@ rollButton.addEventListener(
         const result =
             Math.floor(
                 Math.random()
-                * dice.sides
-            ) + 1;
+                *
+                dice.sides
+            )
+            +
+            1;
 
 
-        resultText.textContent =
+        pendingResult =
             result;
 
 
-        targetRotationX =
-            diceGroup.rotation.x
-            +
-            Math.PI
-            *
-            (
-                4 +
-                Math.random() * 4
+        resultText.textContent =
+            "?";
+
+
+        startQuaternion.copy(
+            diceGroup.quaternion
+        );
+
+
+        targetQuaternion =
+            getLandingQuaternion(
+                result
             );
 
 
-        targetRotationY =
-            diceGroup.rotation.y
-            +
-            Math.PI
-            *
-            (
-                4 +
-                Math.random() * 4
-            );
+        rollStartTime =
+            performance.now();
 
 
-        targetRotationZ =
-            diceGroup.rotation.z
-            +
-            Math.PI
-            *
-            (
-                2 +
-                Math.random() * 3
-            );
+        rolling =
+            true;
 
 
-        rolling = true;
+        rollButton.disabled =
+            true;
+
+
+        diceSelector.disabled =
+            true;
     }
 );
 
 
-/* ========================================
-   ANIMATION
-======================================== */
+/* =====================================================
+   EASING
+===================================================== */
 
-function animate() {
+function easeOutCubic(
+    t
+) {
+
+    return (
+        1 -
+        Math.pow(
+            1 - t,
+            3
+        )
+    );
+}
+
+
+/* =====================================================
+   ANIMATION
+===================================================== */
+
+function animate(
+    time
+) {
 
     requestAnimationFrame(
         animate
@@ -740,71 +1510,122 @@ function animate() {
         diceGroup
     ) {
 
-        diceGroup.rotation.x +=
+        let t =
             (
-                targetRotationX
-                -
-                diceGroup.rotation.x
+                time -
+                rollStartTime
             )
-            * 0.08;
+            /
+            rollDuration;
 
 
-        diceGroup.rotation.y +=
-            (
-                targetRotationY
-                -
-                diceGroup.rotation.y
-            )
-            * 0.08;
-
-
-        diceGroup.rotation.z +=
-            (
-                targetRotationZ
-                -
-                diceGroup.rotation.z
-            )
-            * 0.08;
-
-
-        const dx =
-            Math.abs(
-                targetRotationX
-                -
-                diceGroup.rotation.x
+        t =
+            THREE.MathUtils.clamp(
+                t,
+                0,
+                1
             );
 
 
-        const dy =
-            Math.abs(
-                targetRotationY
-                -
-                diceGroup.rotation.y
+        const eased =
+            easeOutCubic(
+                t
             );
 
 
-        const dz =
-            Math.abs(
-                targetRotationZ
-                -
-                diceGroup.rotation.z
-            );
+        /*
+            Быстрое вращение
+            в начале броска.
+        */
 
+        const spin =
+            new THREE.Quaternion()
+                .setFromEuler(
+
+                    new THREE.Euler(
+
+                        (1 - eased)
+                        *
+                        Math.PI
+                        *
+                        5,
+
+                        (1 - eased)
+                        *
+                        Math.PI
+                        *
+                        7,
+
+                        (1 - eased)
+                        *
+                        Math.PI
+                        *
+                        4
+                    )
+                );
+
+
+        const temporary =
+            startQuaternion
+                .clone()
+                .multiply(
+                    spin
+                );
+
+
+        /*
+            Чем ближе конец броска,
+            тем сильнее кость
+            стремится к нужной грани.
+        */
+
+        temporary.slerp(
+            targetQuaternion,
+            eased
+        );
+
+
+        diceGroup.quaternion.copy(
+            temporary
+        );
+
+
+        /* =============================================
+           FINISH
+        ============================================= */
 
         if (
-            dx < 0.01 &&
-            dy < 0.01 &&
-            dz < 0.01
+            t >= 1
         ) {
 
-            diceGroup.rotation.set(
-                targetRotationX,
-                targetRotationY,
-                targetRotationZ
+            /*
+                Фиксируем ТОЧНО
+                нужную грань.
+            */
+
+            diceGroup.quaternion.copy(
+                targetQuaternion
             );
 
 
-            rolling = false;
+            rolling =
+                false;
+
+
+            resultText.textContent =
+                pendingResult;
+
+
+            pendingResult =
+                null;
+
+
+            rollButton.disabled =
+                false;
+
+
+            diceSelector.disabled =
+                false;
         }
     }
 
@@ -816,18 +1637,23 @@ function animate() {
 }
 
 
-/* ========================================
+/* =====================================================
    START
-======================================== */
+===================================================== */
 
 createDice(
     currentDiceType
 );
 
-animate();
+
+requestAnimationFrame(
+    animate
+);
 
 
-
+/* =====================================================
+   RESIZE
+===================================================== */
 
 window.addEventListener(
     "resize",
@@ -836,12 +1662,14 @@ window.addEventListener(
         const width =
             container.clientWidth;
 
+
         const height =
             container.clientHeight;
 
 
         camera.aspect =
-            width / height;
+            width /
+            height;
 
 
         camera.updateProjectionMatrix();
