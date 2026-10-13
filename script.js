@@ -4,11 +4,42 @@ const diceSelector = document.getElementById("diceSelector");
 const rollButton = document.getElementById("rollButton");
 const resultText = document.getElementById("result");
 
+// ALL GLB DICE MODELS
+
+const diceTypes = {
+    d4: {
+        sides: 4,
+        file: "model/MP_D4_BlackGold.glb"
+    },
+    d6: {
+        sides: 6,
+        file: "model/MP_D6_BlackGold.glb"
+    },
+    d8: {
+        sides: 8,
+        file: "model/MP_D8_BlackGold.glb"
+    },
+    d10: {
+        sides: 10,
+        file: "model/MP_D10_BlackGold.glb"
+    },
+    d12: {
+        sides: 12,
+        file: "model/MP_D12_BlackGold.glb"
+    },
+    d20: {
+        sides: 20,
+        file: "model/MP_D20_BlackGold.glb"
+    }
+};
+
+// SCENE
+
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
     38,
-    container.clientWidth / Math.max(container.clientHeight, 1),
+    1,
     0.1,
     100
 );
@@ -16,397 +47,268 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(0, 2.5, 6);
 camera.lookAt(0, 0, 0);
 
+// RENDERER
+
 const renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: true
 });
 
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(
-    container.clientWidth,
-    Math.max(container.clientHeight, 1)
+renderer.setPixelRatio(
+    Math.min(window.devicePixelRatio, 2)
 );
+
 renderer.setClearColor(0x000000, 0);
 
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
+renderer.toneMappingExposure = 1.15;
 
 container.appendChild(renderer.domElement);
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.48);
+// LIGHTS
+
+const ambientLight = new THREE.AmbientLight(
+    0xffffff,
+    0.75
+);
+
 scene.add(ambientLight);
 
-const mainLight = new THREE.DirectionalLight(0xfff7eb, 3.2);
+const mainLight = new THREE.DirectionalLight(
+    0xffffff,
+    3
+);
+
 mainLight.position.set(-4, 6, 5);
 scene.add(mainLight);
 
-const fillLight = new THREE.DirectionalLight(0xdde8ff, 0.55);
-fillLight.position.set(5, 1, 3);
+const fillLight = new THREE.DirectionalLight(
+    0xdde8ff,
+    1
+);
+
+fillLight.position.set(5, 2, 3);
 scene.add(fillLight);
 
-const backLight = new THREE.DirectionalLight(0xffffff, 0.25);
-backLight.position.set(0, 2, -5);
+const backLight = new THREE.DirectionalLight(
+    0xffffff,
+    0.7
+);
+
+backLight.position.set(0, 3, -5);
 scene.add(backLight);
 
-const diceMaterial = new THREE.MeshStandardMaterial({
-    color: 0xf2efe8,
-    roughness: 0.72,
-    metalness: 0,
-    flatShading: true
-});
+// VARIABLES
 
-const dotMaterial = new THREE.MeshStandardMaterial({
-    color: 0x151515,
-    roughness: 0.45,
-    metalness: 0
-});
+const loader = new THREE.GLTFLoader();
 
 let currentDiceType = diceSelector.value || "d6";
+
 let diceGroup = null;
-let currentFaces = [];
 let rolling = false;
+let modelReady = false;
+
 let pendingResult = null;
 let rollStartTime = 0;
-let targetQuaternion = new THREE.Quaternion();
-let startQuaternion = new THREE.Quaternion();
 let modelRequestId = 0;
 
 const rollDuration = 1600;
 
-const startRotations = {
-    d4: { x: -0.85, y: 0.70, z: 0.48 },
-    d6: { x: -0.42, y: 0.62, z: 0.10 },
-    d8: { x: -0.35, y: 0.65, z: 0.12 },
-    d10: { x: -0.45, y: 0.62, z: 0.18 },
-    d12: { x: -0.38, y: 0.62, z: 0.12 },
-    d20: { x: -0.38, y: 0.62, z: 0.12 }
-};
+const startQuaternion = new THREE.Quaternion();
+const targetQuaternion = new THREE.Quaternion();
 
-const d6FaceNormals = {
-    1: new THREE.Vector3(0, 0, 1),
-    2: new THREE.Vector3(0, -1, 0),
-    3: new THREE.Vector3(1, 0, 0),
-    4: new THREE.Vector3(-1, 0, 0),
-    5: new THREE.Vector3(0, 1, 0),
-    6: new THREE.Vector3(0, 0, -1)
-};
+const spinQuaternion = new THREE.Quaternion();
+const temporaryQuaternion = new THREE.Quaternion();
 
-function getTriangles(geometry) {
-    const position = geometry.attributes.position;
-    const index = geometry.index;
-    const triangles = [];
+// Resize renderer for desktop and mobile
 
-    function addTriangle(ia, ib, ic) {
-        const a = new THREE.Vector3().fromBufferAttribute(position, ia);
-        const b = new THREE.Vector3().fromBufferAttribute(position, ib);
-        const c = new THREE.Vector3().fromBufferAttribute(position, ic);
+function resizeRenderer() {
+    const width = Math.max(container.clientWidth, 1);
+    const height = Math.max(container.clientHeight, 1);
 
-        const center = a.clone().add(b).add(c).divideScalar(3);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
 
-        const normal = b.clone()
-            .sub(a)
-            .cross(c.clone().sub(a))
-            .normalize();
-
-        if (normal.dot(center) < 0) {
-            normal.negate();
-        }
-
-        triangles.push({ center, normal });
-    }
-
-    if (index) {
-        for (let i = 0; i < index.count; i += 3) {
-            addTriangle(
-                index.getX(i),
-                index.getX(i + 1),
-                index.getX(i + 2)
-            );
-        }
-    } else {
-        for (let i = 0; i < position.count; i += 3) {
-            addTriangle(i, i + 1, i + 2);
-        }
-    }
-
-    return triangles;
+    renderer.setSize(width, height);
 }
 
-function getRealFaces(geometry) {
-    const triangles = getTriangles(geometry);
-    const faces = [];
+resizeRenderer();
 
-    triangles.forEach(triangle => {
-        let matchingFace = null;
+window.addEventListener("resize", resizeRenderer);
 
-        for (const face of faces) {
-            const similarity = face.normal.dot(triangle.normal);
-            const difference = Math.abs(
-                face.center.dot(face.normal) -
-                triangle.center.dot(face.normal)
-            );
-
-            if (similarity > 0.999 && difference < 0.025) {
-                matchingFace = face;
-                break;
-            }
-        }
-
-        if (matchingFace) {
-            matchingFace.centers.push(triangle.center.clone());
-
-            matchingFace.center.set(0, 0, 0);
-
-            matchingFace.centers.forEach(point => {
-                matchingFace.center.add(point);
-            });
-
-            matchingFace.center.divideScalar(
-                matchingFace.centers.length
-            );
-        } else {
-            faces.push({
-                normal: triangle.normal.clone(),
-                center: triangle.center.clone(),
-                centers: [triangle.center.clone()]
-            });
-        }
-    });
-
-    return faces;
-}
-
-function sortFaces(faces) {
-    return faces.sort((a, b) => {
-        if (Math.abs(a.center.y - b.center.y) > 0.001) {
-            return b.center.y - a.center.y;
-        }
-
-        return Math.atan2(a.center.z, a.center.x) -
-               Math.atan2(b.center.z, b.center.x);
-    });
-}
-
-function createNumberTexture(number) {
-    const canvas = document.createElement("canvas");
-    canvas.width = 512;
-    canvas.height = 512;
-
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, 512, 512);
-    ctx.fillStyle = "#2E4E7B";
-    ctx.font = "bold 210px Arial";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(String(number), 256, 256);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.encoding = THREE.sRGBEncoding;
-    return texture;
-}
-
-function createNumberLabel(number, face, type) {
-    const texture = createNumberTexture(number);
-
-    const material = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-        side: THREE.DoubleSide,
-        depthWrite: false
-    });
-
-    let size = 1.38;
-    let offset = 0.025;
-
-    if (type === "d4") size = 1.14;
-    if (type === "d8") size = 1.08;
-    if (type === "d10") {
-        size = 0.87;
-        offset = 0.045;
-    }
-    if (type === "d12") size = 1.08;
-    if (type === "d20") size = 0.87;
-
-    const label = new THREE.Mesh(
-        new THREE.PlaneGeometry(size, size),
-        material
-    );
-
-    label.position.copy(face.center);
-    label.position.addScaledVector(face.normal, offset);
-
-    label.quaternion.setFromUnitVectors(
-        new THREE.Vector3(0, 0, 1),
-        face.normal.clone().normalize()
-    );
-
-    return label;
-}
-
-// Загружаем готовую чёрно-золотую модель D6
-function loadBlackGoldD6(group, requestId) {
-    const loader = new THREE.FBXLoader();
-
-    loader.load(
-        "model/Dice_BlackGold.fbx",
-
-        function(model) {
-            if (requestId !== modelRequestId || diceGroup !== group) {
-                return;
-            }
-
-            const box = new THREE.Box3().setFromObject(model);
-            const size = box.getSize(new THREE.Vector3());
-            const center = box.getCenter(new THREE.Vector3());
-            const maxSize = Math.max(size.x, size.y, size.z);
-
-            if (maxSize <= 0) {
-                console.error("Неверный размер FBX-модели");
-                return;
-            }
-
-            const scale = 1.75 / maxSize;
-
-            model.scale.multiplyScalar(scale);
-            model.position.addScaledVector(center, -scale);
-
-            // Убираем временный стандартный D6
-            while (group.children.length > 0) {
-                const child = group.children[0];
-                group.remove(child);
-
-                if (child.geometry) {
-                    child.geometry.dispose();
-                }
-            }
-
-            // Новая модель вращается вместе с diceGroup
-            group.add(model);
-
-            console.log("Новая модель D6 загружена");
-        },
-
-        undefined,
-
-        function(error) {
-            console.error("Ошибка загрузки Dice_BlackGold.fbx:", error);
-        }
-    );
-}
+// LOAD SELECTED GLB MODEL
 
 function createDice(type) {
+    const dice = diceTypes[type];
+
+    if (!dice) {
+        console.error("Unknown dice type:", type);
+        return;
+    }
+
     modelRequestId++;
+
     const requestId = modelRequestId;
+
+    modelReady = false;
+    rollButton.disabled = true;
+
+    resultText.textContent = "-";
+
+    // Remove previous dice
 
     if (diceGroup) {
         scene.remove(diceGroup);
     }
 
     diceGroup = new THREE.Group();
-    currentFaces = [];
-
-    const dice = diceTypes[type];
-
-    if (type === "d6") {
-        // Временная геометрия до загрузки FBX
-        const geometry = dice.createGeometry();
-
-        const mesh = new THREE.Mesh(geometry, diceMaterial);
-        diceGroup.add(mesh);
-
-        for (let number = 1; number <= 6; number++) {
-            currentFaces.push({
-                number,
-                normal: d6FaceNormals[number].clone()
-            });
-        }
-
-        loadBlackGoldD6(diceGroup, requestId);
-    } else {
-        const geometry = dice.createGeometry();
-        const mesh = new THREE.Mesh(geometry, diceMaterial);
-
-        diceGroup.add(mesh);
-
-        let faces;
-
-        if (
-            type === "d10" &&
-            geometry.userData.diceFaces &&
-            geometry.userData.diceFaces.length > 0
-        ) {
-            faces = geometry.userData.diceFaces.map(face => ({
-                center: face.center.clone(),
-                normal: face.normal.clone()
-            }));
-        } else {
-            faces = sortFaces(getRealFaces(geometry));
-        }
-
-        faces = faces.slice(0, dice.sides);
-
-        faces.forEach((face, index) => {
-            const number = index + 1;
-
-            currentFaces.push({
-                number,
-                center: face.center.clone(),
-                normal: face.normal.clone()
-            });
-
-            diceGroup.add(
-                createNumberLabel(number, face, type)
-            );
-        });
-    }
-
-    const rotation = startRotations[type];
-    diceGroup.rotation.set(rotation.x, rotation.y, rotation.z);
 
     scene.add(diceGroup);
-}
 
-function getLandingQuaternion(result) {
-    const face = currentFaces.find(item => item.number === result);
+    const currentGroup = diceGroup;
 
-    if (!face) {
-        return new THREE.Quaternion();
-    }
+    loader.load(
+        dice.file,
 
-    const cameraDirection = camera.position.clone().normalize();
+        function(gltf) {
+            // Ignore outdated loading requests
 
-    return new THREE.Quaternion().setFromUnitVectors(
-        face.normal.clone().normalize(),
-        cameraDirection
+            if (
+                requestId !== modelRequestId ||
+                diceGroup !== currentGroup
+            ) {
+                return;
+            }
+
+            const model = gltf.scene;
+
+            model.updateMatrixWorld(true);
+
+            // Calculate original model bounds
+
+            const box = new THREE.Box3()
+                .setFromObject(model);
+
+            const size = box.getSize(
+                new THREE.Vector3()
+            );
+
+            const center = box.getCenter(
+                new THREE.Vector3()
+            );
+
+            const maxSize = Math.max(
+                size.x,
+                size.y,
+                size.z
+            );
+
+            if (!Number.isFinite(maxSize) || maxSize <= 0) {
+                console.error("Invalid GLB dimensions:", dice.file);
+                resultText.textContent = "Kļūda";
+                return;
+            }
+
+            // Center model in its own coordinate system
+
+            model.position.sub(center);
+
+            // Wrapper scales the complete model
+
+            const wrapper = new THREE.Group();
+
+            wrapper.scale.setScalar(
+                1.85 / maxSize
+            );
+
+            wrapper.add(model);
+
+            currentGroup.add(wrapper);
+
+            // Set initial viewing angle
+
+            currentGroup.rotation.set(
+                -0.38,
+                0.62,
+                0.12
+            );
+
+            modelReady = true;
+            rollButton.disabled = false;
+
+            console.log(
+                type.toUpperCase() + " loaded:",
+                dice.file
+            );
+        },
+
+        undefined,
+
+        function(error) {
+            if (requestId !== modelRequestId) {
+                return;
+            }
+
+            modelReady = false;
+            rollButton.disabled = true;
+            resultText.textContent = "Kļūda";
+
+            console.error(
+                "Failed to load " + dice.file,
+                error
+            );
+        }
     );
 }
+
+// DICE SELECTOR
 
 diceSelector.addEventListener("change", function() {
     if (rolling) return;
 
     currentDiceType = diceSelector.value;
+
     createDice(currentDiceType);
-    resultText.textContent = "-";
 });
 
+// ROLL BUTTON
+
 rollButton.addEventListener("click", function() {
-    if (rolling || !diceGroup) return;
+    if (rolling || !modelReady || !diceGroup) {
+        return;
+    }
 
     const dice = diceTypes[currentDiceType];
 
-    pendingResult = Math.floor(Math.random() * dice.sides) + 1;
+    pendingResult =
+        Math.floor(Math.random() * dice.sides) + 1;
+
     resultText.textContent = "?";
 
     startQuaternion.copy(diceGroup.quaternion);
-    targetQuaternion = getLandingQuaternion(pendingResult);
+
+    // Temporary landing orientation.
+    // Actual face-to-number mapping needs calibration
+    // for each imported GLB model.
+
+    targetQuaternion.setFromEuler(
+        new THREE.Euler(
+            Math.random() * Math.PI * 2,
+            Math.random() * Math.PI * 2,
+            Math.random() * Math.PI * 2
+        )
+    );
 
     rollStartTime = performance.now();
+
     rolling = true;
 
     rollButton.disabled = true;
     diceSelector.disabled = true;
 });
+
+// ANIMATION
 
 function easeOutCubic(t) {
     return 1 - Math.pow(1 - t, 3);
@@ -417,11 +319,12 @@ function animate(time) {
 
     if (rolling && diceGroup) {
         let t = (time - rollStartTime) / rollDuration;
+
         t = THREE.MathUtils.clamp(t, 0, 1);
 
         const eased = easeOutCubic(t);
 
-        const spin = new THREE.Quaternion().setFromEuler(
+        spinQuaternion.setFromEuler(
             new THREE.Euler(
                 (1 - eased) * Math.PI * 5,
                 (1 - eased) * Math.PI * 7,
@@ -429,16 +332,29 @@ function animate(time) {
             )
         );
 
-        const temporary = startQuaternion.clone().multiply(spin);
-        temporary.slerp(targetQuaternion, eased);
+        temporaryQuaternion
+            .copy(startQuaternion)
+            .multiply(spinQuaternion);
 
-        diceGroup.quaternion.copy(temporary);
+        temporaryQuaternion.slerp(
+            targetQuaternion,
+            eased
+        );
+
+        diceGroup.quaternion.copy(
+            temporaryQuaternion
+        );
 
         if (t >= 1) {
-            diceGroup.quaternion.copy(targetQuaternion);
+            diceGroup.quaternion.copy(
+                targetQuaternion
+            );
 
             rolling = false;
-            resultText.textContent = pendingResult;
+
+            resultText.textContent =
+                pendingResult;
+
             pendingResult = null;
 
             rollButton.disabled = false;
@@ -449,14 +365,8 @@ function animate(time) {
     renderer.render(scene, camera);
 }
 
+// START
+
 createDice(currentDiceType);
+
 requestAnimationFrame(animate);
-
-window.addEventListener("resize", function() {
-    const width = container.clientWidth;
-    const height = Math.max(container.clientHeight, 1);
-
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-    renderer.setSize(width, height);
-});
