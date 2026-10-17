@@ -3,7 +3,6 @@
 <html lang="lv">
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
@@ -14,46 +13,61 @@
 
 <body>
 
-    <main class="container">
+    <!-- Animated background -->
+<div class="animated-background" aria-hidden="true">
+    <div class="background-gradient"></div>
+    <div class="background-navy-glow"></div>
+    <div class="background-shine"></div>
+    <div class="background-dots"></div>
+</div>
 
-        <h1>Metamais kauliņš</h1>
+    <!-- Main application -->
+    <main class="app">
 
-        <div class="controls">
+        <header class="app-header">
+            <h1>Metamais kauliņš</h1>
+        </header>
 
-            <label for="diceSelector">
-                Kauliņa veids
-            </label>
+        <section class="dice-app">
 
-            <select id="diceSelector">
-                <option value="d4">D4</option>
-                <option value="d6" selected>D6</option>
-                <option value="d8">D8</option>
-                <option value="d10">D10</option>
-                <option value="d12">D12</option>
-                <option value="d20">D20</option>
-            </select>
+            <div class="selector-container">
+                <label for="diceSelector">
+                    Kauliņa veids
+                </label>
 
-        </div>
+                <select id="diceSelector">
+                    <option value="d4">D4</option>
+                    <option value="d6" selected>D6</option>
+                    <option value="d8">D8</option>
+                    <option value="d10">D10</option>
+                    <option value="d12">D12</option>
+                    <option value="d20">D20</option>
+                </select>
+            </div>
 
-        <div id="diceContainer"></div>
+            <div class="dice-stage">
+                <div id="diceContainer"></div>
+            </div>
 
-        <div class="result">
+            <div class="result-container">
+                <p class="result-label">
+                    Kauliņa rezultāts
+                </p>
 
-            <p>Kauliņa rezultāts</p>
+                <div id="result">-</div>
+            </div>
 
-            <h2 id="result">-</h2>
+            <button id="rollButton" type="button">
+                Mest kauliņu
+            </button>
 
-        </div>
-
-        <button id="rollButton">
-            Mest kauliņu
-        </button>
+        </section>
 
     </main>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="script.js"></script>
 
 </body>
 </html>

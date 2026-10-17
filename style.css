@@ -1,277 +1,570 @@
+
+/* ========================================
+   COLORS
+======================================== */
+
+:root {
+    --ivory: #F5F5F0;
+    --mint: #89FEEA;
+    --gold: #F3A40B;
+    --night: #0C132C;
+    --mid: #1A2242;
+    --dusk: #3B4569;
+}
+
+/* ========================================
+   GENERAL
+======================================== */
+
 * {
     box-sizing: border-box;
 }
 
-
+html,
 body {
-
     margin: 0;
-
-    min-height: 100vh;
-
-    font-family:
-        Arial,
-        sans-serif;
-
-    background:
-        #F6F3EB;
-
-    color:
-        #2E4E7B;
+    padding: 0;
+    min-height: 100%;
 }
 
+html {
+    background: var(--night);
+}
 
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--ivory);
+    background: var(--night);
 
-main {
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    overflow-x: hidden;
+}
+
+/* ========================================
+   ANIMATED BACKGROUND
+======================================== */
+
+.animated-background {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+
+    overflow: hidden;
+    pointer-events: none;
+
+    background: var(--night);
+    isolation: isolate;
+}
+
+.background-gradient,
+.background-navy-glow,
+.background-shine,
+.background-dots {
+    position: absolute;
+    inset: 0;
 
     width: 100%;
+    height: 100%;
 
-    max-width: 500px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 
-    margin: 0 auto;
+    pointer-events: none;
+}
 
-    padding:
-        35px
-        20px
-        60px;
+/* ========================================
+   LAYER 1 - MAIN GRADIENT
+======================================== */
 
+.background-gradient {
+    z-index: 1;
+
+    background-image:
+        url("assets/desktop/MP_01_gradient.png");
+}
+
+/* ========================================
+   LAYER 2 - NAVY GLOW
+======================================== */
+
+.background-navy-glow {
+    z-index: 2;
+
+    background-image:
+        url("assets/desktop/MP_02_glow_navy.png");
+
+    mix-blend-mode: multiply;
+
+    opacity: 0.35;
+
+    transform-origin: center;
+
+    animation:
+        navyGlowPulse 9s ease-in-out infinite;
+}
+
+/* ========================================
+   LAYER 3 - GOLD SHINE
+======================================== */
+
+.background-shine {
+    z-index: 3;
+
+    background-image:
+        url("assets/desktop/MP_04_gold_shine.png");
+
+    opacity: 0.8;
+
+    transform-origin: center;
+
+    animation:
+        goldenPulse 6s ease-in-out infinite;
+}
+
+/* ========================================
+   LAYER 4 - FLOATING DOTS
+======================================== */
+
+.background-dots {
+    z-index: 4;
+
+    background-image:
+        url("assets/desktop/MP_03_dots.png");
+
+    transform-origin: center;
+
+    animation:
+        floatingDots 12s ease-in-out infinite;
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+
+@keyframes navyGlowPulse {
+    0%,
+    100% {
+        transform: scale(0.94);
+        opacity: 0.25;
+    }
+
+    50% {
+        transform: scale(1.08);
+        opacity: 0.45;
+    }
+}
+
+@keyframes goldenPulse {
+    0%,
+    100% {
+        transform: scale(0.88);
+        opacity: 0.55;
+    }
+
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+}
+
+@keyframes floatingDots {
+    0%,
+    100% {
+        transform:
+            translate3d(0, 0, 0)
+            rotate(0deg);
+    }
+
+    25% {
+        transform:
+            translate3d(8px, -12px, 0)
+            rotate(0.4deg);
+    }
+
+    50% {
+        transform:
+            translate3d(-6px, -20px, 0)
+            rotate(-0.3deg);
+    }
+
+    75% {
+        transform:
+            translate3d(-12px, 5px, 0)
+            rotate(0.3deg);
+    }
+}
+
+/* ========================================
+   MAIN APPLICATION
+======================================== */
+
+.app {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 28px 20px 35px;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+
+.app-header {
+    width: 100%;
     text-align: center;
 }
 
+.app-header h1 {
+    margin: 0;
 
+    color: var(--ivory);
 
-h1 {
-
-    margin:
-        0
-        0
-        30px;
-
-    font-size: 32px;
-
-    color:
-        #2E4E7B;
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
+/* ========================================
+   DICE APP LAYOUT
+======================================== */
 
+.dice-app {
+    width: 100%;
+    max-width: 620px;
 
-/* -------------------------
-   DICE SELECTOR
-------------------------- */
-
-.selector-container {
+    flex: 1;
 
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
 
+    padding-top: 20px;
+    padding-bottom: 15px;
+}
+
+/* ========================================
+   DICE SELECTOR
+======================================== */
+
+.selector-container {
+    display: flex;
+    align-items: center;
     justify-content: center;
 
-    align-items: center;
-
     gap: 12px;
+    width: 100%;
 
-    margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
 }
-
 
 .selector-container label {
-
+    color: var(--mint);
     font-size: 15px;
-
-    font-weight: bold;
+    font-weight: 600;
 }
-
 
 #diceSelector {
+    padding: 10px 30px 10px 15px;
 
-    padding:
-        10px
-        14px;
+    color: var(--ivory);
+    background: rgba(12, 19, 44, 0.85);
 
-    border:
-        2px solid
-        #2E4E7B;
+    border: 1px solid rgba(137, 254, 234, 0.4);
+    border-radius: 10px;
 
-    border-radius:
-        10px;
+    font-size: 16px;
+    font-weight: 600;
 
-    background:
-        #F6F3EB;
+    cursor: pointer;
+    outline: none;
 
-    color:
-        #2E4E7B;
-
-    font-size:
-        16px;
-
-    font-weight:
-        bold;
-
-    cursor:
-        pointer;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease;
 }
 
+#diceSelector:hover,
+#diceSelector:focus {
+    border-color: var(--mint);
+}
 
+#diceSelector option {
+    background: var(--night);
+    color: var(--ivory);
+}
 
-/* -------------------------
-   3D AREA
-------------------------- */
+#diceSelector:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   3D DICE AREA
+======================================== */
+
+.dice-stage {
+    width: 100%;
+    flex: 1;
+
+    min-height: 220px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: relative;
+}
 
 #diceContainer {
+    width: min(100%, 520px);
+    height: clamp(260px, 43vh, 470px);
 
-    width: 100%;
-
-    height: 330px;
-
-    margin:
-        10px
-        auto;
-
-    touch-action:
-        manipulation;
+    position: relative;
+    z-index: 1;
 }
 
-
 #diceContainer canvas {
-
     display: block;
-
     width: 100%;
-
     height: 100%;
 }
 
-
-
-/* -------------------------
+/* ========================================
    RESULT
-------------------------- */
+======================================== */
+
+.result-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 8px;
+    margin-bottom: 24px;
+
+    position: relative;
+    z-index: 2;
+}
 
 .result-label {
+    margin: 0;
 
-    margin:
-        5px
-        0;
-
-    font-size:
-        14px;
-
-    color:
-        #8B7E74;
+    color: var(--mint);
+    font-size: 16px;
+    font-weight: 600;
 }
-
 
 #result {
+    min-height: 76px;
 
-    min-height:
-        60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    margin-bottom:
-        20px;
+    color: var(--gold);
 
-    font-size:
-        52px;
+    font-size: clamp(56px, 7vw, 82px);
+    font-weight: 800;
+    line-height: 1;
 
-    font-weight:
-        bold;
-
-    color:
-        #2E4E7B;
+    text-shadow:
+        0 0 22px rgba(243, 164, 11, 0.3);
 }
 
-
-
-/* -------------------------
-   BUTTON
-------------------------- */
+/* ========================================
+   ROLL BUTTON
+======================================== */
 
 #rollButton {
+    width: min(100%, 310px);
+    min-height: 58px;
 
-    width:
-        100%;
+    border: none;
+    border-radius: 14px;
 
-    max-width:
-        300px;
+    background: var(--gold);
+    color: var(--night);
 
-    min-height:
-        55px;
+    font-size: 19px;
+    font-weight: 700;
 
-    padding:
-        15px
-        25px;
+    cursor: pointer;
 
-    border:
-        none;
+    position: relative;
+    z-index: 2;
 
-    border-radius:
-        14px;
-
-    background:
-        #F3A40B;
-
-    color:
-        #2E4E7B;
-
-    font-size:
-        18px;
-
-    font-weight:
-        bold;
-
-    cursor:
-        pointer;
+    box-shadow:
+        0 8px 30px rgba(243, 164, 11, 0.15);
 
     transition:
-        transform
-        0.15s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
 }
 
+#rollButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: #FFB520;
 
-#rollButton:active {
-
-    transform:
-        scale(0.96);
+    box-shadow:
+        0 10px 35px rgba(243, 164, 11, 0.3);
 }
 
+#rollButton:active:not(:disabled) {
+    transform: scale(0.97);
+}
 
+#rollButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
-/* -------------------------
-   MOBILE
-------------------------- */
+/* ========================================
+   MOBILE VERSION
+======================================== */
 
-@media (
-    max-width: 500px
-) {
+@media (max-width: 600px) {
 
-    main {
-
-        padding-top:
-            25px;
+    .background-gradient {
+        background-image:
+            url("assets/mobile/MP_01_gradient.png");
     }
 
-
-    h1 {
-
-        font-size:
-            27px;
-
-        margin-bottom:
-            20px;
+    .background-navy-glow {
+        background-image:
+            url("assets/mobile/MP_02_glow_navy.png");
     }
 
-
-    #diceContainer {
-
-        height:
-            280px;
+    .background-shine {
+        background-image:
+            url("assets/mobile/MP_04_gold_shine.png");
     }
 
+    .background-dots {
+        background-image:
+            url("assets/mobile/MP_03_dots.png");
+
+        animation:
+            floatingDotsMobile
+            12s ease-in-out infinite;
+    }
+
+    .app {
+        padding: 22px 16px 30px;
+    }
+
+    .app-header h1 {
+        font-size: 25px;
+    }
+
+    .dice-app {
+        padding-top: 18px;
+        padding-bottom: 5px;
+    }
 
     .selector-container {
+        gap: 10px;
+    }
 
-        flex-direction:
-            column;
+    .selector-container label {
+        font-size: 14px;
+    }
 
-        gap:
-            7px;
+    #diceSelector {
+        font-size: 14px;
+        padding: 9px 22px 9px 12px;
+    }
+
+    .dice-stage {
+        min-height: 230px;
+    }
+
+    #diceContainer {
+        width: 100%;
+        height: clamp(260px, 42vh, 380px);
+    }
+
+    .result-container {
+        margin-bottom: 24px;
+        gap: 6px;
+    }
+
+    .result-label {
+        font-size: 15px;
+    }
+
+    #result {
+        font-size: 64px;
+        min-height: 65px;
+    }
+
+    #rollButton {
+        width: min(100%, 300px);
+        min-height: 56px;
+        font-size: 18px;
+    }
+}
+
+/* ========================================
+   MOBILE DOT ANIMATION
+======================================== */
+
+@keyframes floatingDotsMobile {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(5px, -14px, 0);
+    }
+}
+
+/* ========================================
+   SMALL PHONES
+======================================== */
+
+@media (max-width: 380px) {
+
+    .app-header h1 {
+        font-size: 22px;
+    }
+
+    #diceContainer {
+        height: 260px;
+    }
+
+    #result {
+        font-size: 55px;
+    }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .background-navy-glow,
+    .background-shine,
+    .background-dots {
+        animation: none;
+    }
+
+    #rollButton,
+    #diceSelector {
+        transition: none;
     }
 }
