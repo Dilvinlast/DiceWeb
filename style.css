@@ -337,3 +337,73 @@ body {
 .result-container {
     display: none !important;
 }
+
+
+/* ========================================
+   FINAL LAYOUT FIX
+======================================== */
+
+/* Hide result text and number */
+.result-container,
+.result-label,
+#result {
+    display: none !important;
+}
+
+/* Place dice selector bottom-left */
+.selector-container {
+    position: fixed !important;
+    left: 28px !important;
+    bottom: 24px !important;
+    top: auto !important;
+    right: auto !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+
+    transform: none !important;
+    margin: 0 !important;
+    z-index: 100 !important;
+}
+
+/* Center the dice stage */
+.dice-app {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+
+    padding: 0 !important;
+}
+
+/* Remove old stage offsets */
+.dice-stage {
+    position: relative !important;
+    width: 100% !important;
+    margin: 0 !important;
+    transform: none !important;
+}
+
+/* Ensure dice container has correct size */
+#diceContainer {
+    width: min(100%, 520px) !important;
+    height: clamp(300px, 55vh, 500px) !important;
+    margin: 0 auto !important;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .selector-container {
+        left: 18px !important;
+        bottom: 20px !important;
+    }
+
+    #diceContainer {
+        height: clamp(270px, 46vh, 400px) !important;
+    }
+}
