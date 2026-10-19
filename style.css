@@ -407,3 +407,21 @@ body {
         height: clamp(270px, 46vh, 400px) !important;
     }
 }
+
+/* Убираем синюю подсветку нажатия на телефоне */
+
+html,
+body,
+#diceContainer,
+#diceContainer canvas {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Убираем выделение кубика при касании */
+
+#diceContainer,
+#diceContainer canvas {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
