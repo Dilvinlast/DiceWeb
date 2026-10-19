@@ -1,8 +1,4 @@
 
-/* ========================================
-   COLORS
-======================================== */
-
 :root {
     --ivory: #F5F5F0;
     --mint: #89FEEA;
@@ -12,10 +8,6 @@
     --dusk: #3B4569;
 }
 
-/* ========================================
-   GENERAL
-======================================== */
-
 * {
     box-sizing: border-box;
 }
@@ -23,7 +15,6 @@
 html,
 body {
     margin: 0;
-    padding: 0;
     min-height: 100%;
 }
 
@@ -32,29 +23,23 @@ html {
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    color: var(--ivory);
-    background: var(--night);
-
     min-height: 100vh;
     min-height: 100dvh;
-
-    overflow-x: hidden;
+    background: var(--night);
+    color: var(--ivory);
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
 }
 
-/* ========================================
-   ANIMATED BACKGROUND
-======================================== */
+/* BACKGROUND */
 
 .animated-background {
     position: fixed;
     inset: 0;
-    z-index: 0;
-
     overflow: hidden;
     pointer-events: none;
-
     background: var(--night);
+    z-index: 0;
     isolation: isolate;
 }
 
@@ -64,241 +49,212 @@ body {
 .background-dots {
     position: absolute;
     inset: 0;
-
-    width: 100%;
-    height: 100%;
-
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-
     pointer-events: none;
 }
 
-/* ========================================
-   LAYER 1 - MAIN GRADIENT
-======================================== */
-
 .background-gradient {
     z-index: 1;
-
     background-image:
         url("assets/desktop/MP_01_gradient.png");
 }
 
-/* ========================================
-   LAYER 2 - NAVY GLOW
-======================================== */
-
 .background-navy-glow {
     z-index: 2;
-
     background-image:
         url("assets/desktop/MP_02_glow_navy.png");
-
     mix-blend-mode: multiply;
-
     opacity: 0.35;
-
-    transform-origin: center;
-
-    animation:
-        navyGlowPulse 9s ease-in-out infinite;
+    animation: navyPulse 9s ease-in-out infinite;
 }
-
-/* ========================================
-   LAYER 3 - GOLD SHINE
-======================================== */
 
 .background-shine {
     z-index: 3;
-
     background-image:
         url("assets/desktop/MP_04_gold_shine.png");
-
     opacity: 0.8;
-
-    transform-origin: center;
-
-    animation:
-        goldenPulse 6s ease-in-out infinite;
+    animation: shinePulse 6s ease-in-out infinite;
 }
-
-/* ========================================
-   LAYER 4 - FLOATING DOTS
-======================================== */
 
 .background-dots {
     z-index: 4;
-
     background-image:
         url("assets/desktop/MP_03_dots.png");
-
-    transform-origin: center;
-
-    animation:
-        floatingDots 12s ease-in-out infinite;
+    animation: dotsFloat 12s ease-in-out infinite;
 }
 
-/* ========================================
-   ANIMATIONS
-======================================== */
+/* BACKGROUND ANIMATIONS */
 
-@keyframes navyGlowPulse {
-    0%,
-    100% {
-        transform: scale(0.94);
+@keyframes navyPulse {
+    0%, 100% {
         opacity: 0.25;
+        transform: scale(0.94);
     }
 
     50% {
-        transform: scale(1.08);
         opacity: 0.45;
+        transform: scale(1.08);
     }
 }
 
-@keyframes goldenPulse {
-    0%,
-    100% {
-        transform: scale(0.88);
+@keyframes shinePulse {
+    0%, 100% {
         opacity: 0.55;
+        transform: scale(0.88);
     }
 
     50% {
-        transform: scale(1.15);
         opacity: 1;
+        transform: scale(1.15);
     }
 }
 
-@keyframes floatingDots {
-    0%,
-    100% {
-        transform:
-            translate3d(0, 0, 0)
-            rotate(0deg);
+@keyframes dotsFloat {
+    0%, 100% {
+        transform: translate3d(0, 0, 0);
     }
 
     25% {
-        transform:
-            translate3d(8px, -12px, 0)
-            rotate(0.4deg);
+        transform: translate3d(8px, -12px, 0);
     }
 
     50% {
-        transform:
-            translate3d(-6px, -20px, 0)
-            rotate(-0.3deg);
+        transform: translate3d(-6px, -20px, 0);
     }
 
     75% {
-        transform:
-            translate3d(-12px, 5px, 0)
-            rotate(0.3deg);
+        transform: translate3d(-12px, 5px, 0);
     }
 }
 
-/* ========================================
-   MAIN APPLICATION
-======================================== */
+/* MAIN APPLICATION */
 
-.app {
+.app,
+.dice-app {
     position: relative;
-    z-index: 1;
-
     width: 100%;
     min-height: 100vh;
     min-height: 100dvh;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    padding: 28px 20px 35px;
 }
 
-/* ========================================
-   HEADER
-======================================== */
-
-.app-header {
-    width: 100%;
-    text-align: center;
+.app {
+    z-index: 1;
 }
-
-.app-header h1 {
-    margin: 0;
-
-    color: var(--ivory);
-
-    font-size: clamp(24px, 3vw, 38px);
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-
-/* ========================================
-   DICE APP LAYOUT
-======================================== */
 
 .dice-app {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px 70px;
+}
+
+/* 3D DICE */
+
+.dice-stage {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    max-width: 620px;
+    flex: 0 0 auto;
+}
 
-    flex: 1;
+#diceContainer {
+    width: min(100%, 520px);
+    height: clamp(300px, 55vh, 500px);
+    cursor: pointer;
+    touch-action: manipulation;
+    outline-offset: -4px;
+}
 
+#diceContainer canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#diceContainer:focus-visible {
+    outline: 2px solid var(--mint);
+    border-radius: 12px;
+}
+
+#diceContainer.is-busy {
+    cursor: progress;
+}
+
+.loading-message {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    color: var(--mint);
+    font-size: 13px;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* RESULT */
+
+.result-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-
-    padding-top: 20px;
-    padding-bottom: 15px;
+    gap: 10px;
+    margin: 0;
 }
 
-/* ========================================
-   DICE SELECTOR
-======================================== */
-
-.selector-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 12px;
-    width: 100%;
-
-    position: relative;
-    z-index: 2;
-}
-
-.selector-container label {
+.result-label {
+    margin: 0;
     color: var(--mint);
     font-size: 15px;
     font-weight: 600;
 }
 
-#diceSelector {
-    padding: 10px 30px 10px 15px;
-
-    color: var(--ivory);
-    background: rgba(12, 19, 44, 0.85);
-
-    border: 1px solid rgba(137, 254, 234, 0.4);
-    border-radius: 10px;
-
-    font-size: 16px;
-    font-weight: 600;
-
-    cursor: pointer;
-    outline: none;
-
-    transition:
-        border-color 0.2s ease,
-        background-color 0.2s ease;
+#result {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 82px;
+    color: var(--gold);
+    font-size: clamp(56px, 7vw, 82px);
+    font-weight: 800;
+    line-height: 1;
+    text-shadow: 0 0 22px rgba(243, 164, 11, 0.3);
 }
 
-#diceSelector:hover,
-#diceSelector:focus {
-    border-color: var(--mint);
+/* TYPE SELECTOR */
+
+.selector-container {
+    position: fixed;
+    left: 28px;
+    bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    z-index: 10;
+}
+
+.selector-container label {
+    color: var(--mint);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#diceSelector {
+    min-width: 82px;
+    padding: 8px 12px;
+    color: var(--ivory);
+    background: rgba(12, 19, 44, 0.85);
+    border: 1px solid rgba(137, 254, 234, 0.4);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 #diceSelector option {
@@ -311,132 +267,15 @@ body {
     cursor: not-allowed;
 }
 
-/* ========================================
-   3D DICE AREA
-======================================== */
-
-.dice-stage {
-    width: 100%;
-    flex: 1;
-
-    min-height: 220px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    position: relative;
-}
-
-#diceContainer {
-    width: min(100%, 520px);
-    height: clamp(260px, 43vh, 470px);
-
-    position: relative;
-    z-index: 1;
-}
-
-#diceContainer canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-/* ========================================
-   RESULT
-======================================== */
-
-.result-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    gap: 8px;
-    margin-bottom: 24px;
-
-    position: relative;
-    z-index: 2;
-}
-
-.result-label {
-    margin: 0;
-
-    color: var(--mint);
-    font-size: 16px;
-    font-weight: 600;
-}
-
-#result {
-    min-height: 76px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    color: var(--gold);
-
-    font-size: clamp(56px, 7vw, 82px);
-    font-weight: 800;
-    line-height: 1;
-
-    text-shadow:
-        0 0 22px rgba(243, 164, 11, 0.3);
-}
-
-/* ========================================
-   ROLL BUTTON
-======================================== */
+/* HIDDEN ROLL BUTTON */
 
 #rollButton {
-    width: min(100%, 310px);
-    min-height: 58px;
-
-    border: none;
-    border-radius: 14px;
-
-    background: var(--gold);
-    color: var(--night);
-
-    font-size: 19px;
-    font-weight: 700;
-
-    cursor: pointer;
-
-    position: relative;
-    z-index: 2;
-
-    box-shadow:
-        0 8px 30px rgba(243, 164, 11, 0.15);
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        background-color 0.2s ease;
+    display: none !important;
 }
 
-#rollButton:hover:not(:disabled) {
-    transform: translateY(-2px);
-    background: #FFB520;
-
-    box-shadow:
-        0 10px 35px rgba(243, 164, 11, 0.3);
-}
-
-#rollButton:active:not(:disabled) {
-    transform: scale(0.97);
-}
-
-#rollButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* ========================================
-   MOBILE VERSION
-======================================== */
+/* MOBILE */
 
 @media (max-width: 600px) {
-
     .background-gradient {
         background-image:
             url("assets/mobile/MP_01_gradient.png");
@@ -455,116 +294,46 @@ body {
     .background-dots {
         background-image:
             url("assets/mobile/MP_03_dots.png");
-
-        animation:
-            floatingDotsMobile
-            12s ease-in-out infinite;
-    }
-
-    .app {
-        padding: 22px 16px 30px;
-    }
-
-    .app-header h1 {
-        font-size: 25px;
     }
 
     .dice-app {
-        padding-top: 18px;
-        padding-bottom: 5px;
-    }
-
-    .selector-container {
-        gap: 10px;
-    }
-
-    .selector-container label {
-        font-size: 14px;
-    }
-
-    #diceSelector {
-        font-size: 14px;
-        padding: 9px 22px 9px 12px;
-    }
-
-    .dice-stage {
-        min-height: 230px;
+        padding: 15px 12px 65px;
     }
 
     #diceContainer {
-        width: 100%;
-        height: clamp(260px, 42vh, 380px);
+        height: clamp(270px, 46vh, 400px);
     }
 
-    .result-container {
-        margin-bottom: 24px;
-        gap: 6px;
+    #result {
+        min-height: 65px;
+        font-size: 64px;
     }
 
     .result-label {
-        font-size: 15px;
+        font-size: 14px;
     }
 
-    #result {
-        font-size: 64px;
-        min-height: 65px;
+    .selector-container {
+        left: 18px;
+        bottom: 20px;
     }
 
-    #rollButton {
-        width: min(100%, 300px);
-        min-height: 56px;
-        font-size: 18px;
-    }
-}
-
-/* ========================================
-   MOBILE DOT ANIMATION
-======================================== */
-
-@keyframes floatingDotsMobile {
-    0%,
-    100% {
-        transform: translate3d(0, 0, 0);
-    }
-
-    50% {
-        transform: translate3d(5px, -14px, 0);
+    #diceSelector {
+        padding: 8px 10px;
+        font-size: 13px;
     }
 }
-
-/* ========================================
-   SMALL PHONES
-======================================== */
-
-@media (max-width: 380px) {
-
-    .app-header h1 {
-        font-size: 22px;
-    }
-
-    #diceContainer {
-        height: 260px;
-    }
-
-    #result {
-        font-size: 55px;
-    }
-}
-
-/* ========================================
-   REDUCED MOTION
-======================================== */
 
 @media (prefers-reduced-motion: reduce) {
-
     .background-navy-glow,
     .background-shine,
     .background-dots {
         animation: none;
     }
+}
 
-    #rollButton,
-    #diceSelector {
-        transition: none;
-    }
+
+#result,
+.result-container {
+    display: none !important;
 }
