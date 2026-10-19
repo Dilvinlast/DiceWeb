@@ -244,12 +244,12 @@
     ======================================== */
 
     scene.add(
-        new THREE.AmbientLight(0xffffff, 0.75)
+        new THREE.AmbientLight(0xffffff, 0.30)
     );
 
     const mainLight = new THREE.DirectionalLight(
         0xffffff,
-        3
+        1.0
     );
 
     mainLight.position.set(-4, 6, 5);
@@ -257,7 +257,7 @@
 
     const fillLight = new THREE.DirectionalLight(
         0xdde8ff,
-        1
+        0.3
     );
 
     fillLight.position.set(5, 2, 3);
@@ -265,7 +265,7 @@
 
     const backLight = new THREE.DirectionalLight(
         0xffffff,
-        0.7
+        0.2
     );
 
     backLight.position.set(0, 3, -5);
