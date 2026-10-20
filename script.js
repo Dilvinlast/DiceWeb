@@ -23,7 +23,7 @@
 
     const types = {
         d4: { sides: 4, file: "model/MP_D4_BlackGold.glb" },
-        d6: { sides: 6, file: "model/MP_D6_BlackGold.glb" },
+        d6: { sides: 6, file: "model/MP_D6_BlackGold_Rounded.glb" },
         d8: { sides: 8, file: "model/MP_D8_BlackGold.glb" },
         d10: { sides: 10, file: "model/MP_D10_BlackGold.glb" },
         d12: { sides: 12, file: "model/MP_D12_BlackGold.glb" },
@@ -198,11 +198,9 @@
 
     /* ========================================
        CAMERA SETTINGS
-
-       Change these values to adjust zoom
     ======================================== */
 
-    const normalCameraZ = 5;
+    const normalCameraZ = 6;
     const closeCameraZ = 4.2;
 
     const normalCameraY = 2.5;
@@ -240,16 +238,16 @@
     container.appendChild(renderer.domElement);
 
     /* ========================================
-       LIGHTING
+       LIGHTING - ORIGINAL BRIGHTNESS
     ======================================== */
 
     scene.add(
-        new THREE.AmbientLight(0xffffff, 0.30)
+        new THREE.AmbientLight(0xffffff, 0.75)
     );
 
     const mainLight = new THREE.DirectionalLight(
         0xffffff,
-        1.0
+        3
     );
 
     mainLight.position.set(-4, 6, 5);
@@ -257,7 +255,7 @@
 
     const fillLight = new THREE.DirectionalLight(
         0xdde8ff,
-        0.3
+        1
     );
 
     fillLight.position.set(5, 2, 3);
@@ -265,7 +263,7 @@
 
     const backLight = new THREE.DirectionalLight(
         0xffffff,
-        0.2
+        0.7
     );
 
     backLight.position.set(0, 3, -5);
@@ -645,15 +643,12 @@
                 1
             );
 
-            // Smooth start and finish
             const eased = t * t * (3 - 2 * t);
 
-            // Interpolate toward calibrated face
             interpolated
                 .copy(startPose)
                 .slerp(targetPose, eased);
 
-            // Two complete rotations
             spinX.setFromAxisAngle(
                 axisX,
                 Math.PI * 2 * 2 * eased
@@ -669,7 +664,6 @@
                 .multiply(spinX)
                 .multiply(spinY);
 
-            // Gentle wobble
             const wobbleStrength =
                 Math.sin(t * Math.PI * 4) *
                 Math.pow(1 - t, 2) *
@@ -684,11 +678,9 @@
                 wobbleQuaternion
             );
 
-            // Small bounce
             diceGroup.position.y =
                 Math.sin(t * Math.PI) * 0.08;
 
-            // End of roll
             if (t >= 1) {
                 diceGroup.quaternion.copy(
                     targetPose
@@ -707,7 +699,6 @@
         }
 
         updateZoom(time);
-
         renderer.render(scene, camera);
     }
 
@@ -759,7 +750,6 @@
     ======================================== */
 
     loadDice(currentType);
-
     requestAnimationFrame(animate);
 
 })();
