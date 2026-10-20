@@ -425,3 +425,27 @@ body,
     user-select: none;
     -webkit-touch-callout: none;
 }
+
+
+/* ========================================
+   NEW STARS BACKGROUND
+======================================== */
+
+/* Убираем старые точки и золотые круги */
+.background-shine {
+    display: none !important;
+}
+
+/* Новые звезды и искры */
+.background-dots {
+    background-image: url("assets/desktop/MP_02_stars_and_sparkles.png") !important;
+    opacity: 1;
+    animation: dotsFloat 12s ease-in-out infinite;
+}
+
+/* Мобильная версия */
+@media (max-width: 600px) {
+    .background-dots {
+        background-image: url("assets/mobile/MP_02_stars_and_sparkles.png") !important;
+    }
+}
