@@ -103,3 +103,56 @@ body {
         animation: none !important;
     }
 }
+
+/* Space background */
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+    background-color: #071322 !important;
+}
+
+body {
+    position: relative;
+    min-height: 100vh;
+    isolation: isolate;
+}
+
+.animated-background {
+    display: block !important;
+    position: fixed !important;
+    inset: -8% !important;
+    width: 116% !important;
+    height: 116% !important;
+
+    background: #071322
+        url("./assets/space-background.jpg")
+        center / cover no-repeat !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: -1 !important;
+
+    animation: spaceFloating 20s ease-in-out
+        infinite alternate !important;
+
+    pointer-events: none;
+}
+
+@keyframes spaceFloating {
+    from {
+        transform: translate(-1%, -1%) scale(1.02);
+    }
+
+    to {
+        transform: translate(1%, 1%) scale(1.06);
+    }
+}
+
+.background-gradient,
+.background-navy-glow,
+.background-shine,
+.background-dots {
+    display: none !important;
+}
