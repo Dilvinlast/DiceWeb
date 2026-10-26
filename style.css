@@ -171,3 +171,27 @@
         animation: none !important;
     }
 }
+
+/* =====================================
+   FIX SPACE BACKGROUND ON GITHUB
+===================================== */
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh !important;
+
+    background-color: #071322 !important;
+    background-image: url("./assets/photo_5979006595783921764_x.jpg") !important;
+    background-position: center center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+}
+
+/* Hide old background container */
+.animated-background {
+    display: none !important;
+}
