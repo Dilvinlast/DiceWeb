@@ -1,158 +1,196 @@
 
 /* =========================================
-   SPACE BACKGROUND — FINAL FIX
+   DICE WEB — COMPLETE STYLESHEET
 ========================================= */
 
-/* Main page background */
-html {
+/* Basic page settings */
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
     min-height: 100%;
-    background-color: #071322;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background: #071322;
 }
 
 body {
     min-height: 100vh;
-    margin: 0;
-
-    background-color: #071322 !important;
-    overflow-x: hidden;
+    min-height: 100dvh;
+    overflow: hidden;
+    background: #071322;
+    isolation: isolate;
 }
 
-/* Animated background with moon and stars */
+/* =========================================
+   ANIMATED SPACE BACKGROUND
+========================================= */
+
 .animated-background {
-    display: block !important;
+    position: fixed;
+    inset: -8%;
+    width: 116%;
+    height: 116%;
 
-    position: fixed !important;
-    inset: -8% !important;
+    background-color: #071322;
+    background-image: url("./assets/space-background.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 
-    width: 116% !important;
-    height: 116% !important;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: none;
 
-    background-color: #071322 !important;
-    background-image: url("./assets/space-background.jpg") !important;
-    background-repeat: no-repeat !important;
-    background-position: center center !important;
-    background-size: cover !important;
+    z-index: -1;
 
-    opacity: 1 !important;
-    visibility: visible !important;
-
-    z-index: 0 !important;
-    pointer-events: none !important;
-
-    animation: spaceFloating 25s ease-in-out infinite alternate !important;
+    animation: spaceFloating 25s ease-in-out
+        infinite alternate;
 }
 
-/* Disable old background layers */
+/* Hide unused old background layers */
 .background-gradient,
 .background-navy-glow,
 .background-shine,
-.background-dots {
-    display: none !important;
-}
-
+.background-dots,
 .animated-background::before,
 .animated-background::after {
-    display: none !important;
-    content: none !important;
+    display: none;
 }
 
-/* Smooth floating movement */
+/* Smooth background motion */
 @keyframes spaceFloating {
     0% {
         transform: translate3d(-1%, -1%, 0)
-                   scale(1.02)
-                   rotate(-0.5deg);
+                   scale(1.02);
     }
 
     50% {
         transform: translate3d(1%, 1%, 0)
-                   scale(1.05)
-                   rotate(0.5deg);
+                   scale(1.05);
     }
 
     100% {
         transform: translate3d(-1%, 1%, 0)
-                   scale(1.03)
-                   rotate(-0.3deg);
+                   scale(1.03);
     }
 }
 
-/* Keep dice above the background */
+/* =========================================
+   DICE CONTAINER
+========================================= */
+
 #diceContainer {
-    z-index: 10 !important;
+    position: fixed;
+
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+
+    transform: translate(-50%, -50%);
+
+    width: min(80vw, 650px);
+    height: min(80vh, 650px);
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 10;
+    cursor: pointer;
 }
 
-/* Keep dice selector above the background */
+/* Three.js canvas */
+#diceContainer canvas {
+    display: block;
+
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* =========================================
+   DICE SELECTOR
+========================================= */
+
 #diceSelector {
-    z-index: 20 !important;
+    position: fixed;
+
+    left: 25px;
+    bottom: 25px;
+    top: auto;
+    right: auto;
+
+    z-index: 20;
+
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+
+    background: rgba(7, 19, 34, 0.75);
+    color: #ffffff;
+
+    font-size: 15px;
+    cursor: pointer;
 }
 
-/* Mobile */
+/* Label styling, if present */
+label[for="diceSelector"] {
+    position: fixed;
+    left: 25px;
+    bottom: 75px;
+
+    color: #ffffff;
+    font-size: 14px;
+
+    z-index: 20;
+}
+
+/* =========================================
+   MOBILE RESPONSIVENESS
+========================================= */
+
 @media (max-width: 600px) {
     .animated-background {
-        inset: -10% !important;
-        width: 120% !important;
-        height: 120% !important;
-        animation-duration: 30s !important;
+        inset: -10%;
+        width: 120%;
+        height: 120%;
+
+        animation-duration: 30s;
+    }
+
+    #diceContainer {
+        width: 100vw;
+        height: 100vw;
+        max-height: 450px;
+    }
+
+    #diceSelector {
+        left: 20px;
+        bottom: 20px;
+    }
+
+    label[for="diceSelector"] {
+        left: 20px;
+        bottom: 70px;
     }
 }
 
-/* Accessibility */
+/* =========================================
+   ACCESSIBILITY
+========================================= */
+
 @media (prefers-reduced-motion: reduce) {
     .animated-background {
-        animation: none !important;
+        animation: none;
     }
-}
-
-/* Space background */
-
-html,
-body {
-    margin: 0;
-    min-height: 100%;
-    background-color: #071322 !important;
-}
-
-body {
-    position: relative;
-    min-height: 100vh;
-    isolation: isolate;
-}
-
-.animated-background {
-    display: block !important;
-    position: fixed !important;
-    inset: -8% !important;
-    width: 116% !important;
-    height: 116% !important;
-
-    background: #071322
-        url("./assets/space-background.jpg")
-        center / cover no-repeat !important;
-
-    opacity: 1 !important;
-    visibility: visible !important;
-    z-index: -1 !important;
-
-    animation: spaceFloating 20s ease-in-out
-        infinite alternate !important;
-
-    pointer-events: none;
-}
-
-@keyframes spaceFloating {
-    from {
-        transform: translate(-1%, -1%) scale(1.02);
-    }
-
-    to {
-        transform: translate(1%, 1%) scale(1.06);
-    }
-}
-
-.background-gradient,
-.background-navy-glow,
-.background-shine,
-.background-dots {
-    display: none !important;
 }
