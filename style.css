@@ -1,31 +1,48 @@
 
 /* =========================================
-   NEW SPACE BACKGROUND
-   Moon and stars
+   SPACE BACKGROUND — FINAL FIX
 ========================================= */
 
-/* Main background image */
-.animated-background {
-    position: fixed !important;
-    inset: 0 !important;
+/* Main page background */
+html {
+    min-height: 100%;
+    background-color: #071322;
+}
 
-    width: 100% !important;
-    height: 100% !important;
-    height: 100dvh !important;
+body {
+    min-height: 100vh;
+    margin: 0;
 
     background-color: #071322 !important;
+    overflow-x: hidden;
+}
 
-    background-image: url("Assets/photo_5979006595783921764_x.jpg") !important;
+/* Animated background with moon and stars */
+.animated-background {
+    display: block !important;
+
+    position: fixed !important;
+    inset: -8% !important;
+
+    width: 116% !important;
+    height: 116% !important;
+
+    background-color: #071322 !important;
+    background-image: url("./assets/space-background.jpg") !important;
     background-repeat: no-repeat !important;
     background-position: center center !important;
     background-size: cover !important;
 
-    animation: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    z-index: 0 !important;
     pointer-events: none !important;
-    z-index: -1;
+
+    animation: spaceFloating 25s ease-in-out infinite alternate !important;
 }
 
-/* Disable previous animated background layers */
+/* Disable old background layers */
 .background-gradient,
 .background-navy-glow,
 .background-shine,
@@ -33,165 +50,56 @@
     display: none !important;
 }
 
-/* Disable old background overlays */
 .animated-background::before,
 .animated-background::after {
-    content: none !important;
     display: none !important;
+    content: none !important;
 }
 
-/* Desktop */
-@media (min-width: 601px) {
-    .animated-background {
-        background-position: center center !important;
-        background-size: cover !important;
+/* Smooth floating movement */
+@keyframes spaceFloating {
+    0% {
+        transform: translate3d(-1%, -1%, 0)
+                   scale(1.02)
+                   rotate(-0.5deg);
+    }
+
+    50% {
+        transform: translate3d(1%, 1%, 0)
+                   scale(1.05)
+                   rotate(0.5deg);
+    }
+
+    100% {
+        transform: translate3d(-1%, 1%, 0)
+                   scale(1.03)
+                   rotate(-0.3deg);
     }
 }
 
-/* Mobile */
-@media (max-width: 600px) {
-    .animated-background {
-        background-position: center center !important;
-        background-size: cover !important;
-    }
-}
-
-
-/* ========================================
-   FIX DICE POSITION
-======================================== */
-
-/* Контейнер кубика по центру экрана */
+/* Keep dice above the background */
 #diceContainer {
-    position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-
-    width: min(80vw, 650px) !important;
-    height: min(80vh, 650px) !important;
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
     z-index: 10 !important;
-    cursor: pointer;
 }
 
-/* 3D-холст */
-#diceContainer canvas {
-    display: block !important;
-    width: 100% !important;
-    height: 100% !important;
-}
-
-/* Селектор кубиков внизу слева */
+/* Keep dice selector above the background */
 #diceSelector {
-    position: fixed !important;
-    left: 30px !important;
-    bottom: 30px !important;
-    top: auto !important;
     z-index: 20 !important;
 }
 
 /* Mobile */
 @media (max-width: 600px) {
-    #diceContainer {
-        width: 100vw !important;
-        height: 75vw !important;
-        max-height: 450px !important;
-    }
-
-    #diceSelector {
-        left: 20px !important;
-        bottom: 25px !important;
+    .animated-background {
+        inset: -10% !important;
+        width: 120% !important;
+        height: 120% !important;
+        animation-duration: 30s !important;
     }
 }
 
-
-
-/* ========================================
-   ANIMATED SPACE BACKGROUND
-======================================== */
-
-.animated-background {
-    position: fixed !important;
-    inset: -5% !important;
-
-    width: 110% !important;
-    height: 110% !important;
-
-    background-image: url("assets/photo_5979006595783921764_x.jpg") !important;
-    background-size: cover !important;
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
-
-    /* Плавное движение */
-    animation: spaceFloating 18s ease-in-out infinite alternate !important;
-
-    pointer-events: none !important;
-    z-index: -1 !important;
-}
-
-/* Плавное покачивание и движение */
-@keyframes spaceFloating {
-    0% {
-        transform: translate(-1%, -1%) scale(1.02) rotate(-0.5deg);
-    }
-
-    25% {
-        transform: translate(1%, -0.5%) scale(1.04) rotate(0deg);
-    }
-
-    50% {
-        transform: translate(1.5%, 1%) scale(1.06) rotate(0.5deg);
-    }
-
-    75% {
-        transform: translate(-0.5%, 1.5%) scale(1.04) rotate(0deg);
-    }
-
-    100% {
-        transform: translate(-1%, -1%) scale(1.02) rotate(-0.5deg);
-    }
-}
-
-/* Убираем старые слои */
-.background-gradient,
-.background-navy-glow,
-.background-shine,
-.background-dots {
-    display: none !important;
-}
-
-/* Для пользователей с отключённой анимацией */
+/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
     .animated-background {
         animation: none !important;
     }
-}
-
-/* =====================================
-   FIX SPACE BACKGROUND ON GITHUB
-===================================== */
-
-html {
-    min-height: 100%;
-}
-
-body {
-    min-height: 100vh !important;
-
-    background-color: #071322 !important;
-    background-image: url("./assets/photo_5979006595783921764_x.jpg") !important;
-    background-position: center center !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
-    background-attachment: fixed !important;
-}
-
-/* Hide old background container */
-.animated-background {
-    display: none !important;
 }
