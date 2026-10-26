@@ -21,14 +21,39 @@
        DICE MODELS
     ======================================== */
 
-    const types = {
-        d4: { sides: 4, file: "model/MP_D4_BlackGold.glb" },
-        d6: { sides: 6, file: "model/MP_D6_BlackGold_Rounded.glb" },
-        d8: { sides: 8, file: "model/MP_D8_BlackGold.glb" },
-        d10: { sides: 10, file: "model/MP_D10_BlackGold.glb" },
-        d12: { sides: 12, file: "model/MP_D12_BlackGold.glb" },
-        d20: { sides: 20, file: "model/MP_D20_BlackGold.glb" }
-    };
+ 
+const types = {
+    d4: {
+        sides: 4,
+        file: "model/MP_D4.glb"
+    },
+
+    d6: {
+        sides: 6,
+        file: "model/MP_D6.glb"
+    },
+
+    d8: {
+        sides: 8,
+        file: "model/MP_D8.glb"
+    },
+
+    d10: {
+        sides: 10,
+        file: "model/MP_D10.glb"
+    },
+
+    d12: {
+        sides: 12,
+        file: "model/MP_D12.glb"
+    },
+
+    d20: {
+        sides: 20,
+        file: "model/MP_D20.glb"
+    }
+};
+
 
     /* ========================================
        BUILT-IN FACE CALIBRATION
@@ -233,7 +258,7 @@
 
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 0.75;
 
     container.appendChild(renderer.domElement);
 

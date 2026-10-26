@@ -1,451 +1,173 @@
 
-:root {
-    --ivory: #F5F5F0;
-    --mint: #89FEEA;
-    --gold: #F3A40B;
-    --night: #0C132C;
-    --mid: #1A2242;
-    --dusk: #3B4569;
-}
+/* =========================================
+   NEW SPACE BACKGROUND
+   Moon and stars
+========================================= */
 
-* {
-    box-sizing: border-box;
-}
-
-html,
-body {
-    margin: 0;
-    min-height: 100%;
-}
-
-html {
-    background: var(--night);
-}
-
-body {
-    min-height: 100vh;
-    min-height: 100dvh;
-    background: var(--night);
-    color: var(--ivory);
-    font-family: Arial, Helvetica, sans-serif;
-    overflow: hidden;
-}
-
-/* BACKGROUND */
-
+/* Main background image */
 .animated-background {
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    background: var(--night);
-    z-index: 0;
-    isolation: isolate;
+    position: fixed !important;
+    inset: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+    height: 100dvh !important;
+
+    background-color: #071322 !important;
+
+    background-image: url("Assets/photo_5979006595783921764_x.jpg") !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: cover !important;
+
+    animation: none !important;
+    pointer-events: none !important;
+    z-index: -1;
 }
 
+/* Disable previous animated background layers */
 .background-gradient,
 .background-navy-glow,
 .background-shine,
 .background-dots {
-    position: absolute;
-    inset: 0;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    pointer-events: none;
-}
-
-.background-gradient {
-    z-index: 1;
-    background-image:
-        url("assets/desktop/MP_01_gradient.png");
-}
-
-.background-navy-glow {
-    z-index: 2;
-    background-image:
-        url("assets/desktop/MP_02_glow_navy.png");
-    mix-blend-mode: multiply;
-    opacity: 0.35;
-    animation: navyPulse 9s ease-in-out infinite;
-}
-
-.background-shine {
-    z-index: 3;
-    background-image:
-        url("assets/desktop/MP_04_gold_shine.png");
-    opacity: 0.8;
-    animation: shinePulse 6s ease-in-out infinite;
-}
-
-.background-dots {
-    z-index: 4;
-    background-image:
-        url("assets/desktop/MP_03_dots.png");
-    animation: dotsFloat 12s ease-in-out infinite;
-}
-
-/* BACKGROUND ANIMATIONS */
-
-@keyframes navyPulse {
-    0%, 100% {
-        opacity: 0.25;
-        transform: scale(0.94);
-    }
-
-    50% {
-        opacity: 0.45;
-        transform: scale(1.08);
-    }
-}
-
-@keyframes shinePulse {
-    0%, 100% {
-        opacity: 0.55;
-        transform: scale(0.88);
-    }
-
-    50% {
-        opacity: 1;
-        transform: scale(1.15);
-    }
-}
-
-@keyframes dotsFloat {
-    0%, 100% {
-        transform: translate3d(0, 0, 0);
-    }
-
-    25% {
-        transform: translate3d(8px, -12px, 0);
-    }
-
-    50% {
-        transform: translate3d(-6px, -20px, 0);
-    }
-
-    75% {
-        transform: translate3d(-12px, 5px, 0);
-    }
-}
-
-/* MAIN APPLICATION */
-
-.app,
-.dice-app {
-    position: relative;
-    width: 100%;
-    min-height: 100vh;
-    min-height: 100dvh;
-}
-
-.app {
-    z-index: 1;
-}
-
-.dice-app {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 30px 20px 70px;
-}
-
-/* 3D DICE */
-
-.dice-stage {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    flex: 0 0 auto;
-}
-
-#diceContainer {
-    width: min(100%, 520px);
-    height: clamp(300px, 55vh, 500px);
-    cursor: pointer;
-    touch-action: manipulation;
-    outline-offset: -4px;
-}
-
-#diceContainer canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-#diceContainer:focus-visible {
-    outline: 2px solid var(--mint);
-    border-radius: 12px;
-}
-
-#diceContainer.is-busy {
-    cursor: progress;
-}
-
-.loading-message {
-    position: absolute;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0;
-    color: var(--mint);
-    font-size: 13px;
-    white-space: nowrap;
-    pointer-events: none;
-}
-
-/* RESULT */
-
-.result-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
-}
-
-.result-label {
-    margin: 0;
-    color: var(--mint);
-    font-size: 15px;
-    font-weight: 600;
-}
-
-#result {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 82px;
-    color: var(--gold);
-    font-size: clamp(56px, 7vw, 82px);
-    font-weight: 800;
-    line-height: 1;
-    text-shadow: 0 0 22px rgba(243, 164, 11, 0.3);
-}
-
-/* TYPE SELECTOR */
-
-.selector-container {
-    position: fixed;
-    left: 28px;
-    bottom: 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    z-index: 10;
-}
-
-.selector-container label {
-    color: var(--mint);
-    font-size: 12px;
-    font-weight: 600;
-}
-
-#diceSelector {
-    min-width: 82px;
-    padding: 8px 12px;
-    color: var(--ivory);
-    background: rgba(12, 19, 44, 0.85);
-    border: 1px solid rgba(137, 254, 234, 0.4);
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-#diceSelector option {
-    background: var(--night);
-    color: var(--ivory);
-}
-
-#diceSelector:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* HIDDEN ROLL BUTTON */
-
-#rollButton {
     display: none !important;
 }
 
-/* MOBILE */
-
-@media (max-width: 600px) {
-    .background-gradient {
-        background-image:
-            url("assets/mobile/MP_01_gradient.png");
-    }
-
-    .background-navy-glow {
-        background-image:
-            url("assets/mobile/MP_02_glow_navy.png");
-    }
-
-    .background-shine {
-        background-image:
-            url("assets/mobile/MP_04_gold_shine.png");
-    }
-
-    .background-dots {
-        background-image:
-            url("assets/mobile/MP_03_dots.png");
-    }
-
-    .dice-app {
-        padding: 15px 12px 65px;
-    }
-
-    #diceContainer {
-        height: clamp(270px, 46vh, 400px);
-    }
-
-    #result {
-        min-height: 65px;
-        font-size: 64px;
-    }
-
-    .result-label {
-        font-size: 14px;
-    }
-
-    .selector-container {
-        left: 18px;
-        bottom: 20px;
-    }
-
-    #diceSelector {
-        padding: 8px 10px;
-        font-size: 13px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .background-navy-glow,
-    .background-shine,
-    .background-dots {
-        animation: none;
-    }
-}
-
-
-#result,
-.result-container {
+/* Disable old background overlays */
+.animated-background::before,
+.animated-background::after {
+    content: none !important;
     display: none !important;
 }
 
-
-/* ========================================
-   FINAL LAYOUT FIX
-======================================== */
-
-/* Hide result text and number */
-.result-container,
-.result-label,
-#result {
-    display: none !important;
-}
-
-/* Place dice selector bottom-left */
-.selector-container {
-    position: fixed !important;
-    left: 28px !important;
-    bottom: 24px !important;
-    top: auto !important;
-    right: auto !important;
-
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 6px !important;
-
-    transform: none !important;
-    margin: 0 !important;
-    z-index: 100 !important;
-}
-
-/* Center the dice stage */
-.dice-app {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    min-height: 100vh !important;
-    min-height: 100dvh !important;
-
-    padding: 0 !important;
-}
-
-/* Remove old stage offsets */
-.dice-stage {
-    position: relative !important;
-    width: 100% !important;
-    margin: 0 !important;
-    transform: none !important;
-}
-
-/* Ensure dice container has correct size */
-#diceContainer {
-    width: min(100%, 520px) !important;
-    height: clamp(300px, 55vh, 500px) !important;
-    margin: 0 auto !important;
+/* Desktop */
+@media (min-width: 601px) {
+    .animated-background {
+        background-position: center center !important;
+        background-size: cover !important;
+    }
 }
 
 /* Mobile */
 @media (max-width: 600px) {
-    .selector-container {
-        left: 18px !important;
-        bottom: 20px !important;
+    .animated-background {
+        background-position: center center !important;
+        background-size: cover !important;
     }
-
-    #diceContainer {
-        height: clamp(270px, 46vh, 400px) !important;
-    }
-}
-
-/* Убираем синюю подсветку нажатия на телефоне */
-
-html,
-body,
-#diceContainer,
-#diceContainer canvas {
-    -webkit-tap-highlight-color: transparent;
-}
-
-/* Убираем выделение кубика при касании */
-
-#diceContainer,
-#diceContainer canvas {
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
 }
 
 
 /* ========================================
-   NEW STARS BACKGROUND
+   FIX DICE POSITION
 ======================================== */
 
-/* Убираем старые точки и золотые круги */
-.background-shine {
+/* Контейнер кубика по центру экрана */
+#diceContainer {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+
+    width: min(80vw, 650px) !important;
+    height: min(80vh, 650px) !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    z-index: 10 !important;
+    cursor: pointer;
+}
+
+/* 3D-холст */
+#diceContainer canvas {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Селектор кубиков внизу слева */
+#diceSelector {
+    position: fixed !important;
+    left: 30px !important;
+    bottom: 30px !important;
+    top: auto !important;
+    z-index: 20 !important;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    #diceContainer {
+        width: 100vw !important;
+        height: 75vw !important;
+        max-height: 450px !important;
+    }
+
+    #diceSelector {
+        left: 20px !important;
+        bottom: 25px !important;
+    }
+}
+
+
+
+/* ========================================
+   ANIMATED SPACE BACKGROUND
+======================================== */
+
+.animated-background {
+    position: fixed !important;
+    inset: -5% !important;
+
+    width: 110% !important;
+    height: 110% !important;
+
+    background-image: url("Assets/photo_5979006595783921764_x.jpg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+
+    /* Плавное движение */
+    animation: spaceFloating 18s ease-in-out infinite alternate !important;
+
+    pointer-events: none !important;
+    z-index: -1 !important;
+}
+
+/* Плавное покачивание и движение */
+@keyframes spaceFloating {
+    0% {
+        transform: translate(-1%, -1%) scale(1.02) rotate(-0.5deg);
+    }
+
+    25% {
+        transform: translate(1%, -0.5%) scale(1.04) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(1.5%, 1%) scale(1.06) rotate(0.5deg);
+    }
+
+    75% {
+        transform: translate(-0.5%, 1.5%) scale(1.04) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-1%, -1%) scale(1.02) rotate(-0.5deg);
+    }
+}
+
+/* Убираем старые слои */
+.background-gradient,
+.background-navy-glow,
+.background-shine,
+.background-dots {
     display: none !important;
 }
 
-/* Новые звезды и искры */
-.background-dots {
-    background-image: url("assets/desktop/MP_02_stars_and_sparkles.png") !important;
-    opacity: 1;
-    animation: dotsFloat 12s ease-in-out infinite;
-}
-
-/* Мобильная версия */
-@media (max-width: 600px) {
-    .background-dots {
-        background-image: url("assets/mobile/MP_02_stars_and_sparkles.png") !important;
+/* Для пользователей с отключённой анимацией */
+@media (prefers-reduced-motion: reduce) {
+    .animated-background {
+        animation: none !important;
     }
 }
