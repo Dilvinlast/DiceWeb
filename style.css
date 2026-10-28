@@ -3,7 +3,10 @@
    DICE WEB — COMPLETE STYLESHEET
 ========================================= */
 
-/* Basic page settings */
+/* =========================================
+   BASIC PAGE SETTINGS
+========================================= */
+
 * {
     box-sizing: border-box;
 }
@@ -17,14 +20,16 @@ body {
 }
 
 html {
-    background: #071322;
+    background-color: #071322;
 }
 
 body {
     min-height: 100vh;
     min-height: 100dvh;
     overflow: hidden;
-    background: #071322;
+    background-color: #071322;
+
+    /* Keep background behind page content */
     isolation: isolate;
 }
 
@@ -34,51 +39,76 @@ body {
 
 .animated-background {
     position: fixed;
-    inset: -8%;
-    width: 116%;
-    height: 116%;
 
+    /* Extra space for background movement */
+    inset: -12%;
+    width: 124%;
+    height: 124%;
+
+    /* Random background selected in script.js */
     background-color: #071322;
-   background-image: var(--space-image, url("./assets/space-1.jpg"));
+    background-image: var(
+        --space-image,
+        url("./assets/space-1.jpg")
+    );
+
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center center;
     background-size: cover;
 
     opacity: 1;
     visibility: visible;
-    pointer-events: none;
+    display: block;
 
+    pointer-events: none;
     z-index: -1;
 
-    animation: spaceFloating 25s ease-in-out
-        infinite alternate;
+    /* Desktop animation */
+    animation-name: spaceFloating;
+    animation-duration: 25s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
-/* Hide unused old background layers */
+/* =========================================
+   HIDE OLD BACKGROUND EFFECTS
+========================================= */
+
 .background-gradient,
 .background-navy-glow,
 .background-shine,
 .background-dots,
 .animated-background::before,
 .animated-background::after {
-    display: none;
+    display: none !important;
 }
 
-/* Smooth background motion */
+/* =========================================
+   BACKGROUND FLOATING ANIMATION
+========================================= */
+
 @keyframes spaceFloating {
     0% {
-        transform: translate3d(-1%, -1%, 0)
-                   scale(1.02);
+        transform:
+            translate3d(-2%, -1%, 0)
+            scale(1.02);
     }
 
     50% {
-        transform: translate3d(1%, 1%, 0)
-                   scale(1.05);
+        transform:
+            translate3d(1%, 2%, 0)
+            scale(1.06);
     }
 
     100% {
-        transform: translate3d(-1%, 1%, 0)
-                   scale(1.03);
+        transform:
+            translate3d(2%, -1%, 0)
+            scale(1.03);
     }
 }
 
@@ -108,14 +138,35 @@ body {
 
     z-index: 10;
     cursor: pointer;
+
+    /* Remove blue tap highlight */
+    -webkit-tap-highlight-color: transparent;
+
+    /* Prevent selection */
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+
+    touch-action: manipulation;
 }
 
-/* Three.js canvas */
+/* =========================================
+   THREE.JS CANVAS
+========================================= */
+
 #diceContainer canvas {
     display: block;
 
     width: 100% !important;
     height: 100% !important;
+
+    -webkit-tap-highlight-color: transparent;
+
+    -webkit-user-select: none;
+    user-select: none;
+
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
 }
 
 /* =========================================
@@ -133,6 +184,7 @@ body {
     z-index: 20;
 
     padding: 8px 12px;
+
     border: 1px solid rgba(255, 255, 255, 0.35);
     border-radius: 8px;
 
@@ -143,9 +195,18 @@ body {
     cursor: pointer;
 }
 
-/* Label styling, if present */
+#diceSelector:focus-visible {
+    outline: 2px solid #a6caff;
+    outline-offset: 3px;
+}
+
+/* =========================================
+   DICE SELECTOR LABEL
+========================================= */
+
 label[for="diceSelector"] {
     position: fixed;
+
     left: 25px;
     bottom: 75px;
 
@@ -160,25 +221,30 @@ label[for="diceSelector"] {
 ========================================= */
 
 @media (max-width: 600px) {
-    .animated-background {
-        inset: -10%;
-        width: 120%;
-        height: 120%;
 
-        animation-duration: 30s;
+    /* Faster moving background */
+    .animated-background {
+        inset: -15%;
+        width: 130%;
+        height: 130%;
+
+        animation-duration: 6s;
     }
 
+    /* Center dice */
     #diceContainer {
         width: 100vw;
         height: 100vw;
         max-height: 450px;
     }
 
+    /* Selector */
     #diceSelector {
         left: 20px;
         bottom: 20px;
     }
 
+    /* Selector label */
     label[for="diceSelector"] {
         left: 20px;
         bottom: 70px;
@@ -189,39 +255,25 @@ label[for="diceSelector"] {
    ACCESSIBILITY
 ========================================= */
 
+/* Reduce movement when requested by the device */
 @media (prefers-reduced-motion: reduce) {
     .animated-background {
         animation: none;
     }
 }
 
-/* Remove blue tap highlight on mobile */
+/* =========================================
+   MOBILE TAP HIGHLIGHT FIX
+========================================= */
+
 html,
 body,
 #diceContainer,
 #diceContainer canvas {
-    -webkit-tap-highlight-color: transparent !important;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* Prevent accidental text selection */
-#diceContainer,
-#diceContainer canvas {
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-    touch-action: manipulation;
-}
-
-/* Remove focus outline only for touch interaction */
+/* Remove unwanted focus outline after touch */
 #diceContainer:focus:not(:focus-visible) {
     outline: none;
-}
-
-
-/* Faster background animation on mobile */
-@media (max-width: 600px) {
-    .animated-background {
-        animation: spaceFloating 6s ease-in-out
-                   infinite alternate !important;
-    }
 }
