@@ -216,3 +216,12 @@ body,
 #diceContainer:focus:not(:focus-visible) {
     outline: none;
 }
+
+
+/* Faster background animation on mobile */
+@media (max-width: 600px) {
+    .animated-background {
+        animation: spaceFloating 10s ease-in-out
+                   infinite alternate !important;
+    }
+}
