@@ -1,4 +1,33 @@
 
+/* ========================================
+   RANDOM SPACE BACKGROUND
+======================================== */
+
+(function () {
+    const backgrounds = [
+        "./assets/space-1.jpg",
+        "./assets/space-2.jpg",
+        "./assets/space-2.jpg"
+    ];
+
+    // Randomly select one background on page load
+    const randomIndex = Math.floor(
+        Math.random() * backgrounds.length
+    );
+
+    const selectedBackground = backgrounds[randomIndex];
+
+    // Apply selected background to CSS
+    document.documentElement.style.setProperty(
+        "--space-image",
+        `url("${selectedBackground}")`
+    );
+
+    console.log("Selected background:", selectedBackground);
+})();
+
+
+
 (function () {
     "use strict";
 
@@ -266,33 +295,44 @@ const types = {
        LIGHTING - ORIGINAL BRIGHTNESS
     ======================================== */
 
-    scene.add(
-        new THREE.AmbientLight(0xffffff, 0.75)
-    );
+ 
+/* ========================================
+   SPACE CINEMATIC LIGHTING
+   Softer highlights and cooler ambient light
+======================================== */
 
-    const mainLight = new THREE.DirectionalLight(
-        0xffffff,
-        3
-    );
+// Мягкий общий свет
+scene.add(
+    new THREE.AmbientLight(0x9db8e8, 0.65)
+);
 
-    mainLight.position.set(-4, 6, 5);
-    scene.add(mainLight);
+// Основной холодный свет
+const mainLight = new THREE.DirectionalLight(
+    0xc7e5ff,
+    1.6
+);
 
-    const fillLight = new THREE.DirectionalLight(
-        0xdde8ff,
-        1
-    );
+mainLight.position.set(-4, 6, 5);
+scene.add(mainLight);
 
-    fillLight.position.set(5, 2, 3);
-    scene.add(fillLight);
+// Дополнительное голубое освещение
+const fillLight = new THREE.DirectionalLight(
+    0x719bdf,
+    0.55
+);
 
-    const backLight = new THREE.DirectionalLight(
-        0xffffff,
-        0.7
-    );
+fillLight.position.set(5, 2, 3);
+scene.add(fillLight);
 
-    backLight.position.set(0, 3, -5);
-    scene.add(backLight);
+// Мягкая подсветка сзади
+const backLight = new THREE.DirectionalLight(
+    0xd9edff,
+    0.85
+);
+
+backLight.position.set(0, 4, -5);
+scene.add(backLight);
+
 
     /* ========================================
        VARIABLES
