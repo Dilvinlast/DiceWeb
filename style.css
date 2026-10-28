@@ -221,7 +221,7 @@ body,
 /* Faster background animation on mobile */
 @media (max-width: 600px) {
     .animated-background {
-        animation: spaceFloating 10s ease-in-out
+        animation: spaceFloating 6s ease-in-out
                    infinite alternate !important;
     }
 }
