@@ -6,18 +6,12 @@
 (function () {
     const backgrounds = [
         "./assets/space-1.jpg",
-        "./assets/space-2.jpg",
         "./assets/space-2.jpg"
     ];
 
-    // Randomly select one background on page load
-    const randomIndex = Math.floor(
-        Math.random() * backgrounds.length
-    );
+    const selectedBackground =
+        backgrounds[Math.floor(Math.random() * backgrounds.length)];
 
-    const selectedBackground = backgrounds[randomIndex];
-
-    // Apply selected background to CSS
     document.documentElement.style.setProperty(
         "--space-image",
         `url("${selectedBackground}")`
@@ -26,7 +20,9 @@
     console.log("Selected background:", selectedBackground);
 })();
 
-
+/* ========================================
+   DICE WEB
+======================================== */
 
 (function () {
     "use strict";
@@ -50,43 +46,36 @@
        DICE MODELS
     ======================================== */
 
- 
-const types = {
-    d4: {
-        sides: 4,
-        file: "model/MP_D4.glb"
-    },
-
-    d6: {
-        sides: 6,
-        file: "model/MP_D6.glb"
-    },
-
-    d8: {
-        sides: 8,
-        file: "model/MP_D8.glb"
-    },
-
-    d10: {
-        sides: 10,
-        file: "model/MP_D10.glb"
-    },
-
-    d12: {
-        sides: 12,
-        file: "model/MP_D12.glb"
-    },
-
-    d20: {
-        sides: 20,
-        file: "model/MP_D20.glb"
-    }
-};
-
+    const types = {
+        d4: {
+            sides: 4,
+            file: "model/MP_D4.glb"
+        },
+        d6: {
+            sides: 6,
+            file: "model/MP_D6.glb"
+        },
+        d8: {
+            sides: 8,
+            file: "model/MP_D8.glb"
+        },
+        d10: {
+            sides: 10,
+            file: "model/MP_D10.glb"
+        },
+        d12: {
+            sides: 12,
+            file: "model/MP_D12.glb"
+        },
+        d20: {
+            sides: 20,
+            file: "model/MP_D20.glb"
+        }
+    };
 
     /* ========================================
        BUILT-IN FACE CALIBRATION
-       Quaternion format: [x, y, z, w]
+       Quaternion: [x, y, z, w]
     ======================================== */
 
     const DEFAULT_CALIBRATION = {
@@ -170,12 +159,10 @@ const types = {
     };
 
     /* ========================================
-       CALIBRATION
-       Local settings override built-in values
+       CALIBRATION STORAGE
     ======================================== */
 
     const STORAGE_KEY = "dice-blackgold-calibration-v1";
-
     const calibration = {};
 
     for (const type of Object.keys(types)) {
@@ -292,47 +279,36 @@ const types = {
     container.appendChild(renderer.domElement);
 
     /* ========================================
-       LIGHTING - ORIGINAL BRIGHTNESS
+       CINEMATIC LIGHTING
     ======================================== */
 
- 
-/* ========================================
-   SPACE CINEMATIC LIGHTING
-   Softer highlights and cooler ambient light
-======================================== */
+    scene.add(
+        new THREE.AmbientLight(0x9db8e8, 0.65)
+    );
 
-// Мягкий общий свет
-scene.add(
-    new THREE.AmbientLight(0x9db8e8, 0.65)
-);
+    const mainLight = new THREE.DirectionalLight(
+        0xc7e5ff,
+        1.6
+    );
 
-// Основной холодный свет
-const mainLight = new THREE.DirectionalLight(
-    0xc7e5ff,
-    1.6
-);
+    mainLight.position.set(-4, 6, 5);
+    scene.add(mainLight);
 
-mainLight.position.set(-4, 6, 5);
-scene.add(mainLight);
+    const fillLight = new THREE.DirectionalLight(
+        0x719bdf,
+        0.55
+    );
 
-// Дополнительное голубое освещение
-const fillLight = new THREE.DirectionalLight(
-    0x719bdf,
-    0.55
-);
+    fillLight.position.set(5, 2, 3);
+    scene.add(fillLight);
 
-fillLight.position.set(5, 2, 3);
-scene.add(fillLight);
+    const backLight = new THREE.DirectionalLight(
+        0xd9edff,
+        0.85
+    );
 
-// Мягкая подсветка сзади
-const backLight = new THREE.DirectionalLight(
-    0xd9edff,
-    0.85
-);
-
-backLight.position.set(0, 4, -5);
-scene.add(backLight);
-
+    backLight.position.set(0, 4, -5);
+    scene.add(backLight);
 
     /* ========================================
        VARIABLES
@@ -369,11 +345,69 @@ scene.add(backLight);
     let startTime = 0;
     let pendingNumber = 0;
 
+    const duration = 3800;
+
     /* ========================================
-       ROLL SPEED
+       MOUSE PULL — FULL SCREEN
     ======================================== */
 
-    const duration = 3800;
+    const mousePull = {
+        targetX: 0,
+        targetY: 0,
+        x: 0,
+        y: 0,
+
+        // Maximum movement of the dice
+        strength: 0.22,
+
+        // Smoothness of movement
+        smoothness: 0.09
+    };
+
+    // Follow the mouse anywhere on the page
+    window.addEventListener("pointermove", function (event) {
+        if (
+            event.pointerType !== "mouse" ||
+            !ready ||
+            rolling
+        ) {
+            return;
+        }
+
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        if (width <= 0 || height <= 0) {
+            return;
+        }
+
+        // Normalize mouse position to -1 ... 1
+        const x = (event.clientX / width) * 2 - 1;
+        const y = (event.clientY / height) * 2 - 1;
+
+        // Clamp movement so dice stays near center
+        mousePull.targetX =
+            THREE.MathUtils.clamp(x, -1, 1) *
+            mousePull.strength;
+
+        mousePull.targetY =
+            -THREE.MathUtils.clamp(y, -1, 1) *
+            mousePull.strength;
+    });
+
+    // Return dice to center when mouse leaves page
+    document.addEventListener("pointerout", function (event) {
+        if (!event.relatedTarget) {
+            mousePull.targetX = 0;
+            mousePull.targetY = 0;
+        }
+    });
+
+    // Return dice to center if browser loses focus
+    window.addEventListener("blur", function () {
+        mousePull.targetX = 0;
+        mousePull.targetY = 0;
+    });
 
     /* ========================================
        ZOOM VARIABLES
@@ -528,6 +562,12 @@ scene.add(backLight);
         ready = false;
         rolling = false;
 
+        // Reset mouse pull
+        mousePull.targetX = 0;
+        mousePull.targetY = 0;
+        mousePull.x = 0;
+        mousePull.y = 0;
+
         resetCamera();
         setBusy(true);
 
@@ -599,7 +639,6 @@ scene.add(backLight);
                 );
 
                 diceGroup = new THREE.Group();
-
                 diceGroup.add(centerGroup);
 
                 diceGroup.quaternion.copy(
@@ -678,6 +717,10 @@ scene.add(backLight);
             );
             return;
         }
+
+        // Return dice toward center during roll
+        mousePull.targetX = 0;
+        mousePull.targetY = 0;
 
         startPose.copy(diceGroup.quaternion);
         targetPose.copy(pose);
@@ -760,6 +803,27 @@ scene.add(backLight);
 
                 startZoom(true);
                 setBusy(false);
+            }
+        }
+
+        /* ========================================
+           SMOOTH MOUSE PULL
+        ======================================== */
+
+        mousePull.x +=
+            (mousePull.targetX - mousePull.x) *
+            mousePull.smoothness;
+
+        mousePull.y +=
+            (mousePull.targetY - mousePull.y) *
+            mousePull.smoothness;
+
+        if (diceGroup) {
+            diceGroup.position.x = mousePull.x;
+
+            // Preserve bounce during roll
+            if (!rolling) {
+                diceGroup.position.y = mousePull.y;
             }
         }
 
