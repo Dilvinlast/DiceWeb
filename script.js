@@ -10,7 +10,10 @@
         "./assets/space-3.jpg",
         "./assets/space-4.jpg",
         "./assets/space-5.jpg",
-          "./assets/space-6.jpg"
+        "./assets/space-6.png",
+        "./assets/space-7.png",
+        "./assets/space-8.png",
+        "./assets/space-9.png"
     ];
 
     const selectedBackground =
